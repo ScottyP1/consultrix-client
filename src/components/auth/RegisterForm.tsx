@@ -30,13 +30,14 @@ const RegisterForm = () => {
           <GlassInput placeholder="Email" />
           <GlassInput placeholder="Password" />
           <button className="bg-white text-black rounded-2xl p-4 font-bold">
-            Sign in
+            Create account
           </button>
         </section>
         <section className="flex flex-col gap-2 justify-center items-center">
           <span className="text-white/40">
             Already have an account?
-            <Link to="." className="text-white">
+            <Link to="/auth/login" className="text-white">
+              {' '}
               Click here
             </Link>
           </span>
