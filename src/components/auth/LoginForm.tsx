@@ -36,7 +36,7 @@ const LoginForm = () => {
           <span>Forgot Password?</span>
           <span className="text-white/40">
             No account?
-            <Link to="." className="text-white">
+            <Link to="/auth/register" className="text-white">
               {' '}
               Click here
             </Link>
