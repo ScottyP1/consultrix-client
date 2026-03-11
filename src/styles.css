@@ -5,3 +5,19 @@
 @theme {
   --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
 }
+
+body {
+  height: 100vh;
+  width: 100%;
+}
+
+.auth-login-img {
+  background-image: url('/images/auth-img.png');
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 14px;
+  background-position: center top;
+}
