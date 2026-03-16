@@ -1,0 +1,98 @@
+import GlassContainer from '../liquidGlass/GlassContainer'
+
+import {
+  LuGraduationCap,
+  LuUsers,
+  LuLayoutDashboard,
+  LuBadgeInfo,
+} from 'react-icons/lu'
+const data = [
+  {
+    icon: <LuUsers size={40} color="#5686E1" />,
+    title: 'Student',
+    issues: [
+      'Scattered assignments across tools',
+      'Poor visibility into grades and progress',
+      'No centralized calendar',
+      'Limited communication clarity',
+    ],
+  },
+  {
+    icon: <LuGraduationCap size={40} color="#75F94C" />,
+    title: 'Instructors',
+    issues: [
+      'Disorganized submissions',
+      'Manual grading workflows',
+      'No oriented student performance tracking',
+      'Difficulty identifying at-risk students',
+    ],
+  },
+  {
+    icon: <LuLayoutDashboard color="#8B2CF5" size={40} />,
+    title: 'Program & Operation Leaders',
+    issues: [
+      'No real-time cohort visibility',
+      'No facility capacity tracking',
+      'Limited placement pipeline insight',
+      'Fragmented data across organizations',
+    ],
+  },
+]
+const ProblemSection = () => {
+  return (
+    <div className="flex flex-col gap-10">
+      <h2 className="text-center text-xl font-semibold uppercase tracking-[0.5em] text-white/80">
+        Problem Statement
+      </h2>
+      <div className="grid gap-6 grid-cols-1 md:grid-cols-3">
+        {data.map((item) => (
+          <ProblemCard
+            key={item.title}
+            icon={item.icon}
+            title={item.title}
+            issues={item.issues}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export default ProblemSection
+
+const ProblemCard = ({
+  icon,
+  title,
+  issues,
+  color,
+}: {
+  icon: React.ReactElement
+  title: string
+  issues: Array<string>
+  color: string
+}) => {
+  return (
+    <GlassContainer className="flex h-full flex-col gap-6 rounded-3xl p-6">
+      <div className="flex items-center gap-4">
+        <GlassContainer className="flex min-h-15 min-w-15 items-center justify-center rounded-2xl border-white/15 text-white/80 ">
+          {icon}
+        </GlassContainer>
+        <span className="text-sm font-semibold uppercase tracking-[0.28em] text-white/90">
+          {title}
+        </span>
+      </div>
+      <div className="flex flex-col gap-3 text-sm text-white/70">
+        {issues.map((item) => (
+          <div key={item} className="flex items-start gap-3">
+            <LuBadgeInfo
+              className="mt-0.5 text-white/40"
+              size={16}
+              color="red"
+            />
+            <span>{item}</span>
+          </div>
+        ))}
+      </div>
+    </GlassContainer>
+  )
+}
