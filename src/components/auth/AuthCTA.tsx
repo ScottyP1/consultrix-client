@@ -1,13 +1,13 @@
 const AuthCTA = () => {
   return (
-    <div className="auth-login-img w-1/2 px-6 flex-col items-center justify-center hidden md:flex gap-2">
-      <span className="text-gray-500 font-bold text-md tracking-[5px] self-start">
+    <div className="auth-img w-1/2 px-6 flex-col items-start justify-center hidden md:flex gap-2">
+      <h3 className="text-[15px] uppercase tracking-[0.6em] text-white/50">
         WELCOME
-      </span>
+      </h3>
       <h1 className="self-start text-4xl font-bold italic">
         Study Smarter. Not Harder.
       </h1>
-      <span className="text-gray-400">
+      <span className="text-white/50">
         Organize lectures, manage assignments, and track your academic progress
         in one streamlined workspace.
       </span>
