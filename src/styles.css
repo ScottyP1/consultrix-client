@@ -41,15 +41,14 @@ section[id] {
   scroll-margin-top: 8.5rem;
 }
 
-.auth-login-img {
-  background-image: url('/images/auth-img.png');
-  background-size: 100%;
+.auth-img {
+  background-image: url('/images/auth-img.jpg');
+  background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
   height: 100%;
   overflow: hidden;
   border-radius: 14px;
-  background-position: center top;
 }
 
 :root {

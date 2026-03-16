@@ -1,5 +1,6 @@
 import { Menu, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 
 import GlassContainer from '../liquidGlass/GlassContainer'
 import AuthBtnGroup from '../auth/AuthBtnGroup'
@@ -7,6 +8,8 @@ import AuthBtnGroup from '../auth/AuthBtnGroup'
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement | null>(null)
+  const location = useLocation()
+  const navigate = useNavigate()
   const navBase =
     'relative after:absolute after:left-0 after:-bottom-2 after:h-px after:w-full after:transition-transform'
   const navInactive =
@@ -22,6 +25,19 @@ const Navbar = () => {
     const target = document.getElementById(id)
     if (!target) return
     target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  const navigateToSection = (id: string) => {
+    setIsMenuOpen(false)
+
+    if (location.pathname === '/') {
+      scrollToSection(id)
+      return
+    }
+
+    void navigate({ to: '/', hash: id }).then(() => {
+      requestAnimationFrame(() => scrollToSection(id))
+    })
   }
 
   useEffect(() => {
@@ -61,10 +77,15 @@ const Navbar = () => {
         className="relative flex h-full items-center justify-between gap-10 px-6 text-center"
         style={{ fontFamily: '"Space Grotesk", "Manrope", sans-serif' }}
       >
-        <button
-          type="button"
+        <Link
+          to="/"
           className="flex gap-4 items-center hover:cursor-pointer"
-          onClick={() => scrollToSection('hero')}
+          onClick={() => {
+            setIsMenuOpen(false)
+            if (location.pathname === '/') {
+              scrollToSection('hero')
+            }
+          }}
         >
           <img
             src="/images/consultrix-icon.png"
@@ -76,7 +97,7 @@ const Navbar = () => {
           <span className="tracking-[0.45em] text-[11px] text-white/70">
             CONSULTRIX
           </span>
-        </button>
+        </Link>
         <div className="relative" ref={menuRef}>
           <button
             type="button"
@@ -96,65 +117,47 @@ const Navbar = () => {
               <button
                 role="menuitem"
                 className={`${navBase} ${navInactive} block w-full rounded-xl px-4 py-3 text-left`}
-                onClick={() => {
-                  scrollToSection('hero')
-                  setIsMenuOpen(false)
-                }}
+                onClick={() => navigateToSection('hero')}
               >
                 HOME
               </button>
               <button
                 role="menuitem"
                 className={`${navBase} ${navInactive} block w-full rounded-xl px-4 py-3 text-left`}
-                onClick={() => {
-                  scrollToSection('solutions')
-                  setIsMenuOpen(false)
-                }}
+                onClick={() => navigateToSection('solutions')}
               >
                 SOLUTIONS
               </button>
               <button
                 role="menuitem"
                 className={`${navBase} ${navInactive} block w-full rounded-xl px-4 py-3 text-left`}
-                onClick={() => {
-                  scrollToSection('capabilities')
-                  setIsMenuOpen(false)
-                }}
+                onClick={() => navigateToSection('capabilities')}
               >
                 CORE CAPABILITIES
               </button>
               <button
                 role="menuitem"
                 className={`${navBase} ${navInactive} block w-full rounded-xl px-4 py-3 text-left`}
-                onClick={() => {
-                  scrollToSection('warehouse-ops')
-                  setIsMenuOpen(false)
-                }}
+                onClick={() => navigateToSection('warehouse-ops')}
               >
                 WAREHOUSE OPERATIONS
               </button>
               <button
                 role="menuitem"
                 className={`${navBase} ${navInactive} block w-full rounded-xl px-4 py-3 text-left`}
-                onClick={() => {
-                  scrollToSection('cohort-timeline')
-                  setIsMenuOpen(false)
-                }}
+                onClick={() => navigateToSection('cohort-timeline')}
               >
                 COHORT LIFECYCLE TIMELINE
               </button>
               <button
                 role="menuitem"
                 className={`${navBase} ${navInactive} block w-full rounded-xl px-4 py-3 text-left`}
-                onClick={() => {
-                  scrollToSection('key-benefits')
-                  setIsMenuOpen(false)
-                }}
+                onClick={() => navigateToSection('key-benefits')}
               >
                 KEY BENEFITS
               </button>
               <div className="mt-4 border-t border-white/10 pt-4">
-                <AuthBtnGroup />
+                <AuthBtnGroup onNavigate={() => setIsMenuOpen(false)} />
               </div>
             </div>
           )}
