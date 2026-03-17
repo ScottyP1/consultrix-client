@@ -5,7 +5,7 @@ const PartnersLoop = () => {
     {
       src: '/images/accenture-logo.png',
       alt: 'Accenture',
-      href: 'https://company1.com',
+      href: 'https://www.accenture.com/us-en?c=acn_glb_sembrandpuregoogle_13513493&n=psgs_0323&&&&&gclsrc=aw.ds&&c=ad_usadfy17_10000001&n=psgs_Brand-|-US-|-Exact_accenture&gad_source=1&gad_campaignid=935554953&gbraid=0AAAAADG9MDrpIdRBbRRK5Ke3PtUf4gJAq&gclid=CjwKCAjw1N7NBhAoEiwAcPchp_4apdL_ZLVSiZoi88Xk8fCD2EGHA7h3vmRezYn_OghznveTuxmOuRoC60MQAvD_BwE',
     },
     {
       src: '/images/logo.jpg',
@@ -16,6 +16,11 @@ const PartnersLoop = () => {
       src: '/images/nomad-logo.png',
       alt: 'nomadtrack',
       href: 'https://nomadtrack.net',
+    },
+    {
+      src: '/images/peopleshoreslogo.png',
+      alt: 'peopleshores',
+      href: 'https://peopleshores.com/',
     },
   ]
   return (
@@ -33,8 +38,8 @@ const PartnersLoop = () => {
         logos={imageLogos}
         speed={90}
         direction="left"
-        logoHeight={72}
-        gap={48}
+        logoHeight={88}
+        gap={56}
         hoverSpeed={0}
         scaleOnHover
         renderItem={(item) => {
@@ -42,12 +47,12 @@ const PartnersLoop = () => {
             const isOddbnbLogo = item.src === '/images/logo.jpg'
 
             return (
-              <div className="flex h-16 w-40 items-center justify-center">
+              <div className="flex h-24 w-52 items-center justify-center">
                 <img
                   src={item.src}
                   alt={item.alt ?? ''}
                   className={[
-                    'h-full w-full object-contain opacity-70',
+                    'h-20 w-48 object-contain opacity-70',
                     isOddbnbLogo && 'mix-blend-screen',
                   ]
                     .filter(Boolean)
