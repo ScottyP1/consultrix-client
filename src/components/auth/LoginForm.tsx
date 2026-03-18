@@ -20,7 +20,7 @@ const LoginForm = () => {
         password,
       })
 
-      void navigate({ to: '/' })
+      void navigate({ to: '/student/dashboard' })
     } catch {}
   }
 

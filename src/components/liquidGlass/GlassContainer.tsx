@@ -7,9 +7,9 @@ type GlassContainerProps = {
 }
 
 const baseStyle: CSSProperties = {
-  background: 'rgba(255, 255, 255, 0.08)',
+  backgroundColor: 'rgba(255, 255, 255, 0.05)',
   boxShadow:
-    '0px 6px 18px -12px rgba(0, 0, 0, 0.35), 0px 1px 6px -3px rgba(0, 0, 0, 0.25), 0px 1px 3px rgba(255, 255, 255, 0.12) inset',
+    '0px 10px 30px -18px rgba(0, 0, 0, 0.45), 0px 1px 0px rgba(255, 255, 255, 0.08) inset, 0px 0px 0px 1px rgba(255, 255, 255, 0.02) inset',
   backdropFilter: 'blur(10px)',
   WebkitBackdropFilter: 'blur(10px)',
 }
@@ -21,7 +21,7 @@ const GlassContainer = ({
 }: GlassContainerProps) => {
   return (
     <div
-      className={`rounded-[14px] h-12 border border-[rgba(255,255,255,0.28)] ${className}`}
+      className={`rounded-[14px] border border-white/10 bg-white/5 px-4 py-3 ${className}`}
       style={{ ...baseStyle, ...style }}
     >
       {children}

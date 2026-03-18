@@ -1,19 +1,42 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { useEffect } from 'react'
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
+
+import { getToken } from '@/lib/auth-token'
+import { useAuth } from '@/context/AuthContext'
 
 import HeroSection from '#/components/appIntro/HeroSection'
 import PartnersLoop from '#/components/UI/PartnersLoop'
 import SolutionSection from '#/components/appIntro/SolutionSection'
 import ProblemSection from '#/components/appIntro/ProblemSection'
 import CapabilitiesSection from '#/components/appIntro/CapabilitiesSection'
-import GlowOrb from '#/components/UI/GlowOrb'
 import WarehouseManagementSection from '#/components/appIntro/WarehouseManagementSection'
 import CohortLifecycleTimeline from '#/components/appIntro/CohortTimeline'
 import Grainient from '#/components/Grainient'
 import BenefitsSection from '#/components/appIntro/BenefitsSection'
 
-export const Route = createFileRoute('/')({ component: App })
+export const Route = createFileRoute('/')({
+  beforeLoad: () => {
+    if (typeof window !== 'undefined' && getToken()) {
+      throw redirect({ to: '/student/dashboard' })
+    }
+  },
+  component: App,
+})
 
 function App() {
+  const navigate = useNavigate()
+  const { isAuthenticated } = useAuth()
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      void navigate({ to: '/student/dashboard', replace: true })
+    }
+  }, [isAuthenticated, navigate])
+
+  if (isAuthenticated) {
+    return null
+  }
+
   return (
     <main className="relative min-h-screen w-full px-4 text-[#D9DEE5] overflow-x-hidden">
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">

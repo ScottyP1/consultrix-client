@@ -1,13 +1,39 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { useEffect } from 'react'
+import {
+  createFileRoute,
+  Outlet,
+  redirect,
+  useNavigate,
+} from '@tanstack/react-router'
 
 import AuthCTA from '@/components/auth/AuthCTA'
+import { useAuth } from '@/context/AuthContext'
+import { getToken } from '@/lib/auth-token'
 import Grainient from '#/components/Grainient'
 
 export const Route = createFileRoute('/auth')({
+  beforeLoad: () => {
+    if (typeof window !== 'undefined' && getToken()) {
+      throw redirect({ to: '/student/dashboard' })
+    }
+  },
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const navigate = useNavigate()
+  const { isAuthenticated } = useAuth()
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      void navigate({ to: '/student/dashboard', replace: true })
+    }
+  }, [isAuthenticated, navigate])
+
+  if (isAuthenticated) {
+    return null
+  }
+
   return (
     <div className="flex h-screen items-center justify-center text-white">
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
