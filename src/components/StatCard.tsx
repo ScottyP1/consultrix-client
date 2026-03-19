@@ -1,6 +1,6 @@
 import type { IconType } from 'react-icons'
 
-import GlassContainer from '../liquidGlass/GlassContainer'
+import GlassContainer from './liquidGlass/GlassContainer'
 
 type StatCardProps = {
   icon: IconType

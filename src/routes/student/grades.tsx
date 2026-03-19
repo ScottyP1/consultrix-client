@@ -1,5 +1,6 @@
-import StatCard from '#/components/dashboard/StatCard'
+import StatCard from '#/components/StatCard'
 import GradesModulesList from '#/components/grades/student/GradesModulesList'
+import PageHeader from '#/components/PageHeader'
 import { createFileRoute } from '@tanstack/react-router'
 
 import { LuAward, LuChartBarIncreasing, LuBookOpenCheck } from 'react-icons/lu'
@@ -32,14 +33,10 @@ const gradeStatData = [
 function RouteComponent() {
   return (
     <div className="flex flex-col gap-6">
-      <header className="space-y-1">
-        <h1 className="text-3xl font-semibold tracking-tight text-white">
-          Grades
-        </h1>
-        <p className="text-sm text-white/55">
-          Review your academic performance
-        </p>
-      </header>
+      <PageHeader
+        eyebrow="Grades"
+        subtitle="Review your academic performance"
+      />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {gradeStatData.map((item) => (

@@ -5,8 +5,9 @@ import { Outlet, useNavigate } from '@tanstack/react-router'
 import { useAuth } from '@/context/AuthContext'
 import { studentNavLinks } from '@/components/navigation/sidebar-config'
 import { requireAuth } from '@/lib/require-auth'
-import Grainient from '#/components/Grainient'
 import SideBar from '#/components/navigation/SideBar'
+
+import Grainient from '#/components/Grainient'
 import MagicRings from '#/components/MagicRings'
 
 export const Route = createFileRoute('/student')({
