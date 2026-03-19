@@ -1,42 +1,20 @@
 import ItemContainer from '../ItemContainer'
 import GlassContainer from '../liquidGlass/GlassContainer'
-import {
-  LucideMail,
-  LucidePhone,
-  LucideMapPin,
-  LucideCalendar,
-} from 'lucide-react'
+import type { ProfileContactItem } from '#/data/profile/types'
 
-const contactData = [
-  {
-    icon: <LucideMail size={20} color="gray" />,
-    label: 'Email',
-    value: 'Alex.johnson.email.com',
-  },
-  {
-    icon: <LucidePhone size={20} color="gray" />,
-    label: 'Phone',
-    value: '(555) 123-4567',
-  },
-  {
-    icon: <LucideMapPin size={20} color="gray" />,
-    label: 'Location',
-    value: 'Jeffersonville, OH',
-  },
-  {
-    icon: <LucideCalendar size={20} color="gray" />,
-    label: 'Enrollment Date',
-    value: 'Jan 5, 2026',
-  },
-]
-const ContactCard = () => {
+const ContactCard = ({ items }: { items: ProfileContactItem[] }) => {
   return (
     <GlassContainer className="flex flex-col gap-4">
       <h2 className="text-2xl">Personal Information</h2>
 
       <div className="grid grid-cols-2 gap-8">
-        {contactData.map((item) => (
-          <ContactItem label={item.label} icon={item.icon} value={item.value} />
+        {items.map((item) => (
+          <ContactItem
+            key={item.label}
+            label={item.label}
+            icon={item.icon}
+            value={item.value}
+          />
         ))}
       </div>
     </GlassContainer>
@@ -51,15 +29,17 @@ const ContactItem = ({
   value,
 }: {
   label: string
-  icon: React.ReactElement
+  icon: ProfileContactItem['icon']
   value: string
 }) => {
+  const Icon = icon
+
   return (
     <div className="flex flex-col gap-2">
       <span className="text-sm text-white/45">{label}</span>
       <ItemContainer>
         <span className="flex gap-4">
-          {icon} {value}
+          <Icon size={20} color="gray" /> {value}
         </span>
       </ItemContainer>
     </div>

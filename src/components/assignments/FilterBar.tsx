@@ -1,10 +1,8 @@
 import { useState } from 'react'
 import { LuFilter } from 'react-icons/lu'
 
-const options = ['All', 'Pending', 'Submitted', 'Graded']
-
-const FilterBar = () => {
-  const [selectedFilter, setSelectedFilter] = useState('All')
+const FilterBar = ({ options }: { options: readonly string[] }) => {
+  const [selectedFilter, setSelectedFilter] = useState(options[0] ?? 'All')
 
   return (
     <div className="flex gap-4 items-center">
