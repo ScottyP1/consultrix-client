@@ -13,8 +13,11 @@ import { Route as StudentRouteRouteImport } from './routes/student/route'
 import { Route as AuthRouteRouteImport } from './routes/auth/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StudentSyllabusRouteImport } from './routes/student/syllabus'
+import { Route as StudentProfileRouteImport } from './routes/student/profile'
+import { Route as StudentMessagesRouteImport } from './routes/student/messages'
 import { Route as StudentGradesRouteImport } from './routes/student/grades'
 import { Route as StudentDashboardRouteImport } from './routes/student/dashboard'
+import { Route as StudentCalendarRouteImport } from './routes/student/calendar'
 import { Route as StudentAssignmentsRouteImport } from './routes/student/assignments'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
@@ -39,6 +42,16 @@ const StudentSyllabusRoute = StudentSyllabusRouteImport.update({
   path: '/syllabus',
   getParentRoute: () => StudentRouteRoute,
 } as any)
+const StudentProfileRoute = StudentProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => StudentRouteRoute,
+} as any)
+const StudentMessagesRoute = StudentMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => StudentRouteRoute,
+} as any)
 const StudentGradesRoute = StudentGradesRouteImport.update({
   id: '/grades',
   path: '/grades',
@@ -47,6 +60,11 @@ const StudentGradesRoute = StudentGradesRouteImport.update({
 const StudentDashboardRoute = StudentDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => StudentRouteRoute,
+} as any)
+const StudentCalendarRoute = StudentCalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
   getParentRoute: () => StudentRouteRoute,
 } as any)
 const StudentAssignmentsRoute = StudentAssignmentsRouteImport.update({
@@ -72,8 +90,11 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/student/assignments': typeof StudentAssignmentsRoute
+  '/student/calendar': typeof StudentCalendarRoute
   '/student/dashboard': typeof StudentDashboardRoute
   '/student/grades': typeof StudentGradesRoute
+  '/student/messages': typeof StudentMessagesRoute
+  '/student/profile': typeof StudentProfileRoute
   '/student/syllabus': typeof StudentSyllabusRoute
 }
 export interface FileRoutesByTo {
@@ -83,8 +104,11 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/student/assignments': typeof StudentAssignmentsRoute
+  '/student/calendar': typeof StudentCalendarRoute
   '/student/dashboard': typeof StudentDashboardRoute
   '/student/grades': typeof StudentGradesRoute
+  '/student/messages': typeof StudentMessagesRoute
+  '/student/profile': typeof StudentProfileRoute
   '/student/syllabus': typeof StudentSyllabusRoute
 }
 export interface FileRoutesById {
@@ -95,8 +119,11 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/student/assignments': typeof StudentAssignmentsRoute
+  '/student/calendar': typeof StudentCalendarRoute
   '/student/dashboard': typeof StudentDashboardRoute
   '/student/grades': typeof StudentGradesRoute
+  '/student/messages': typeof StudentMessagesRoute
+  '/student/profile': typeof StudentProfileRoute
   '/student/syllabus': typeof StudentSyllabusRoute
 }
 export interface FileRouteTypes {
@@ -108,8 +135,11 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/student/assignments'
+    | '/student/calendar'
     | '/student/dashboard'
     | '/student/grades'
+    | '/student/messages'
+    | '/student/profile'
     | '/student/syllabus'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -119,8 +149,11 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/student/assignments'
+    | '/student/calendar'
     | '/student/dashboard'
     | '/student/grades'
+    | '/student/messages'
+    | '/student/profile'
     | '/student/syllabus'
   id:
     | '__root__'
@@ -130,8 +163,11 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/student/assignments'
+    | '/student/calendar'
     | '/student/dashboard'
     | '/student/grades'
+    | '/student/messages'
+    | '/student/profile'
     | '/student/syllabus'
   fileRoutesById: FileRoutesById
 }
@@ -171,6 +207,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentSyllabusRouteImport
       parentRoute: typeof StudentRouteRoute
     }
+    '/student/profile': {
+      id: '/student/profile'
+      path: '/profile'
+      fullPath: '/student/profile'
+      preLoaderRoute: typeof StudentProfileRouteImport
+      parentRoute: typeof StudentRouteRoute
+    }
+    '/student/messages': {
+      id: '/student/messages'
+      path: '/messages'
+      fullPath: '/student/messages'
+      preLoaderRoute: typeof StudentMessagesRouteImport
+      parentRoute: typeof StudentRouteRoute
+    }
     '/student/grades': {
       id: '/student/grades'
       path: '/grades'
@@ -183,6 +233,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/student/dashboard'
       preLoaderRoute: typeof StudentDashboardRouteImport
+      parentRoute: typeof StudentRouteRoute
+    }
+    '/student/calendar': {
+      id: '/student/calendar'
+      path: '/calendar'
+      fullPath: '/student/calendar'
+      preLoaderRoute: typeof StudentCalendarRouteImport
       parentRoute: typeof StudentRouteRoute
     }
     '/student/assignments': {
@@ -225,15 +282,21 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 
 interface StudentRouteRouteChildren {
   StudentAssignmentsRoute: typeof StudentAssignmentsRoute
+  StudentCalendarRoute: typeof StudentCalendarRoute
   StudentDashboardRoute: typeof StudentDashboardRoute
   StudentGradesRoute: typeof StudentGradesRoute
+  StudentMessagesRoute: typeof StudentMessagesRoute
+  StudentProfileRoute: typeof StudentProfileRoute
   StudentSyllabusRoute: typeof StudentSyllabusRoute
 }
 
 const StudentRouteRouteChildren: StudentRouteRouteChildren = {
   StudentAssignmentsRoute: StudentAssignmentsRoute,
+  StudentCalendarRoute: StudentCalendarRoute,
   StudentDashboardRoute: StudentDashboardRoute,
   StudentGradesRoute: StudentGradesRoute,
+  StudentMessagesRoute: StudentMessagesRoute,
+  StudentProfileRoute: StudentProfileRoute,
   StudentSyllabusRoute: StudentSyllabusRoute,
 }
 
