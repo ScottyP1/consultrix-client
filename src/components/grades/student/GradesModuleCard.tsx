@@ -48,9 +48,9 @@ const GradesModuleCard = ({
           </div>
 
           <div className="text-right">
-            <p className="text-4xl font-semibold tracking-tight text-white">
+            <h3 className="text-xl font-semibold tracking-tight text-white">
               {module.courseAveragePercent}%
-            </p>
+            </h3>
             <p className="text-sm text-white/45">Course Average</p>
           </div>
         </button>

@@ -1,4 +1,4 @@
-import StatCard from '#/components/dashboard/StatCard'
+import StatCard from '#/components/StatCard'
 import GradesModulesList from '#/components/grades/student/GradesModulesList'
 import PageHeader from '#/components/PageHeader'
 import { createFileRoute } from '@tanstack/react-router'

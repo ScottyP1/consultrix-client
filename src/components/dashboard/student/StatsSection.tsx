@@ -1,4 +1,4 @@
-import StatCard from '../StatCard'
+import StatCard from '../../StatCard'
 import { cn } from '#/lib/utils'
 import { LuAward, LuClock3, LuClipboardCheck, LuUser } from 'react-icons/lu'
 

@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as StudentSyllabusRouteImport } from './routes/student/syllabus'
 import { Route as StudentGradesRouteImport } from './routes/student/grades'
 import { Route as StudentDashboardRouteImport } from './routes/student/dashboard'
+import { Route as StudentAssignmentsRouteImport } from './routes/student/assignments'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 
@@ -48,6 +49,11 @@ const StudentDashboardRoute = StudentDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => StudentRouteRoute,
 } as any)
+const StudentAssignmentsRoute = StudentAssignmentsRouteImport.update({
+  id: '/assignments',
+  path: '/assignments',
+  getParentRoute: () => StudentRouteRoute,
+} as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/student': typeof StudentRouteRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/student/assignments': typeof StudentAssignmentsRoute
   '/student/dashboard': typeof StudentDashboardRoute
   '/student/grades': typeof StudentGradesRoute
   '/student/syllabus': typeof StudentSyllabusRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/student': typeof StudentRouteRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/student/assignments': typeof StudentAssignmentsRoute
   '/student/dashboard': typeof StudentDashboardRoute
   '/student/grades': typeof StudentGradesRoute
   '/student/syllabus': typeof StudentSyllabusRoute
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/student': typeof StudentRouteRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/student/assignments': typeof StudentAssignmentsRoute
   '/student/dashboard': typeof StudentDashboardRoute
   '/student/grades': typeof StudentGradesRoute
   '/student/syllabus': typeof StudentSyllabusRoute
@@ -98,6 +107,7 @@ export interface FileRouteTypes {
     | '/student'
     | '/auth/login'
     | '/auth/register'
+    | '/student/assignments'
     | '/student/dashboard'
     | '/student/grades'
     | '/student/syllabus'
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/student'
     | '/auth/login'
     | '/auth/register'
+    | '/student/assignments'
     | '/student/dashboard'
     | '/student/grades'
     | '/student/syllabus'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/student'
     | '/auth/login'
     | '/auth/register'
+    | '/student/assignments'
     | '/student/dashboard'
     | '/student/grades'
     | '/student/syllabus'
@@ -173,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentDashboardRouteImport
       parentRoute: typeof StudentRouteRoute
     }
+    '/student/assignments': {
+      id: '/student/assignments'
+      path: '/assignments'
+      fullPath: '/student/assignments'
+      preLoaderRoute: typeof StudentAssignmentsRouteImport
+      parentRoute: typeof StudentRouteRoute
+    }
     '/auth/register': {
       id: '/auth/register'
       path: '/register'
@@ -205,12 +224,14 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 )
 
 interface StudentRouteRouteChildren {
+  StudentAssignmentsRoute: typeof StudentAssignmentsRoute
   StudentDashboardRoute: typeof StudentDashboardRoute
   StudentGradesRoute: typeof StudentGradesRoute
   StudentSyllabusRoute: typeof StudentSyllabusRoute
 }
 
 const StudentRouteRouteChildren: StudentRouteRouteChildren = {
+  StudentAssignmentsRoute: StudentAssignmentsRoute,
   StudentDashboardRoute: StudentDashboardRoute,
   StudentGradesRoute: StudentGradesRoute,
   StudentSyllabusRoute: StudentSyllabusRoute,
