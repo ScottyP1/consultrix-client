@@ -28,7 +28,11 @@ function RouteComponent() {
         subtitle="Here's your latest progress and upcoming activity."
       />
 
-      <StatsSection />
+      <DashboardGrid>
+        <DashboardColumn span={9}>
+          <StatsSection />
+        </DashboardColumn>
+      </DashboardGrid>
 
       <DashboardGrid>
         <DashboardColumn span={6}>

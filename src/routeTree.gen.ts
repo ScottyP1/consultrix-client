@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as StudentRouteRouteImport } from './routes/student/route'
 import { Route as AuthRouteRouteImport } from './routes/auth/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StudentGradesRouteImport } from './routes/student/grades'
 import { Route as StudentSyllabusRouteImport } from './routes/student/syllabus'
 import { Route as StudentDashboardRouteImport } from './routes/student/dashboard'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
@@ -32,6 +33,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StudentGradesRoute = StudentGradesRouteImport.update({
+  id: '/grades',
+  path: '/grades',
 const StudentSyllabusRoute = StudentSyllabusRouteImport.update({
   id: '/syllabus',
   path: '/syllabus',
@@ -60,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/student/dashboard': typeof StudentDashboardRoute
+  '/student/grades': typeof StudentGradesRoute
   '/student/syllabus': typeof StudentSyllabusRoute
 }
 export interface FileRoutesByTo {
@@ -69,6 +74,7 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/student/dashboard': typeof StudentDashboardRoute
+  '/student/grades': typeof StudentGradesRoute
   '/student/syllabus': typeof StudentSyllabusRoute
 }
 export interface FileRoutesById {
@@ -79,6 +85,7 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/student/dashboard': typeof StudentDashboardRoute
+  '/student/grades': typeof StudentGradesRoute
   '/student/syllabus': typeof StudentSyllabusRoute
 }
 export interface FileRouteTypes {
@@ -90,6 +97,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/student/dashboard'
+    | '/student/grades'
     | '/student/syllabus'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -99,6 +107,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/student/dashboard'
+    | '/student/grades'
     | '/student/syllabus'
   id:
     | '__root__'
@@ -108,6 +117,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/student/dashboard'
+    | '/student/grades'
     | '/student/syllabus'
   fileRoutesById: FileRoutesById
 }
@@ -140,6 +150,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/student/grades': {
+      id: '/student/grades'
+      path: '/grades'
+      fullPath: '/student/grades'
+      preLoaderRoute: typeof StudentGradesRouteImport
     '/student/syllabus': {
       id: '/student/syllabus'
       path: '/syllabus'
@@ -187,11 +202,13 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 
 interface StudentRouteRouteChildren {
   StudentDashboardRoute: typeof StudentDashboardRoute
+  StudentGradesRoute: typeof StudentGradesRoute
   StudentSyllabusRoute: typeof StudentSyllabusRoute
 }
 
 const StudentRouteRouteChildren: StudentRouteRouteChildren = {
   StudentDashboardRoute: StudentDashboardRoute,
+  StudentGradesRoute: StudentGradesRoute,
   StudentSyllabusRoute: StudentSyllabusRoute,
 }
 
