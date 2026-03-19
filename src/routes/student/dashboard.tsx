@@ -7,7 +7,7 @@ import ActionsSection from '#/components/dashboard/student/ActionsSection'
 import SectionFrame from '#/components/dashboard/SectionFrame'
 import StatsSection from '#/components/dashboard/student/StatsSection'
 import UpcomingSection from '#/components/dashboard/student/UpcomingSection'
-import Header from '#/components/dashboard/Header'
+import PageHeader from '#/components/PageHeader'
 
 import { LuCalendarDays } from 'react-icons/lu'
 import ProgressSection from '#/components/dashboard/student/ProgressSection'
@@ -22,21 +22,34 @@ export const Route = createFileRoute('/student/dashboard')({
 function RouteComponent() {
   return (
     <div className="flex flex-col gap-6">
-      <Header role="student" userName="tim" />
+      <PageHeader
+        eyebrow="Dashboard"
+        title={`Welcome back tim`}
+        subtitle="Here's your latest progress and upcoming activity."
+      />
 
       <StatsSection />
 
       <DashboardGrid>
         <DashboardColumn span={6}>
-          <SectionFrame label="Actions required" className="min-h-[18rem] max-h-[20rem]">
+          <SectionFrame
+            label="Actions required"
+            className="min-h-[18rem] max-h-[20rem]"
+          >
             <ActionsSection />
           </SectionFrame>
 
-          <SectionFrame label="Course Progress" className="min-h-[15rem] max-h-[18rem]">
+          <SectionFrame
+            label="Course Progress"
+            className="min-h-[15rem] max-h-[18rem]"
+          >
             <ProgressSection />
           </SectionFrame>
 
-          <SectionFrame label="Recent Feedback" className="min-h-[16rem] max-h-[18rem]">
+          <SectionFrame
+            label="Recent Feedback"
+            className="min-h-[16rem] max-h-[18rem]"
+          >
             <RecentFeedbackSection />
           </SectionFrame>
         </DashboardColumn>
@@ -50,11 +63,17 @@ function RouteComponent() {
             <UpcomingSection />
           </SectionFrame>
 
-          <SectionFrame label="Announcements" className="min-h-[13rem] max-h-[15rem]">
+          <SectionFrame
+            label="Announcements"
+            className="min-h-[13rem] max-h-[15rem]"
+          >
             <AnnouncementsSection />
           </SectionFrame>
 
-          <SectionFrame label="Quick Actions" className="min-h-[16rem] max-h-[18rem]">
+          <SectionFrame
+            label="Quick Actions"
+            className="min-h-[16rem] max-h-[18rem]"
+          >
             <QuickActionsSection />
           </SectionFrame>
         </DashboardColumn>
