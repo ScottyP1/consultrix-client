@@ -12,8 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as StudentRouteRouteImport } from './routes/student/route'
 import { Route as AuthRouteRouteImport } from './routes/auth/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as StudentGradesRouteImport } from './routes/student/grades'
 import { Route as StudentSyllabusRouteImport } from './routes/student/syllabus'
+import { Route as StudentGradesRouteImport } from './routes/student/grades'
 import { Route as StudentDashboardRouteImport } from './routes/student/dashboard'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
@@ -33,12 +33,14 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StudentGradesRoute = StudentGradesRouteImport.update({
-  id: '/grades',
-  path: '/grades',
 const StudentSyllabusRoute = StudentSyllabusRouteImport.update({
   id: '/syllabus',
   path: '/syllabus',
+  getParentRoute: () => StudentRouteRoute,
+} as any)
+const StudentGradesRoute = StudentGradesRouteImport.update({
+  id: '/grades',
+  path: '/grades',
   getParentRoute: () => StudentRouteRoute,
 } as any)
 const StudentDashboardRoute = StudentDashboardRouteImport.update({
@@ -150,16 +152,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/student/grades': {
-      id: '/student/grades'
-      path: '/grades'
-      fullPath: '/student/grades'
-      preLoaderRoute: typeof StudentGradesRouteImport
     '/student/syllabus': {
       id: '/student/syllabus'
       path: '/syllabus'
       fullPath: '/student/syllabus'
       preLoaderRoute: typeof StudentSyllabusRouteImport
+      parentRoute: typeof StudentRouteRoute
+    }
+    '/student/grades': {
+      id: '/student/grades'
+      path: '/grades'
+      fullPath: '/student/grades'
+      preLoaderRoute: typeof StudentGradesRouteImport
       parentRoute: typeof StudentRouteRoute
     }
     '/student/dashboard': {
