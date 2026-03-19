@@ -24,19 +24,32 @@ function RouteComponent() {
     <div className="flex flex-col gap-6">
       <Header role="student" userName="tim" />
 
-      <StatsSection />
+      <DashboardGrid>
+        <DashboardColumn span={9}>
+          <StatsSection />
+        </DashboardColumn>
+      </DashboardGrid>
 
       <DashboardGrid>
         <DashboardColumn span={6}>
-          <SectionFrame label="Actions required" className="min-h-[18rem] max-h-[20rem]">
+          <SectionFrame
+            label="Actions required"
+            className="min-h-[18rem] max-h-[20rem]"
+          >
             <ActionsSection />
           </SectionFrame>
 
-          <SectionFrame label="Course Progress" className="min-h-[15rem] max-h-[18rem]">
+          <SectionFrame
+            label="Course Progress"
+            className="min-h-[15rem] max-h-[18rem]"
+          >
             <ProgressSection />
           </SectionFrame>
 
-          <SectionFrame label="Recent Feedback" className="min-h-[16rem] max-h-[18rem]">
+          <SectionFrame
+            label="Recent Feedback"
+            className="min-h-[16rem] max-h-[18rem]"
+          >
             <RecentFeedbackSection />
           </SectionFrame>
         </DashboardColumn>
@@ -50,11 +63,17 @@ function RouteComponent() {
             <UpcomingSection />
           </SectionFrame>
 
-          <SectionFrame label="Announcements" className="min-h-[13rem] max-h-[15rem]">
+          <SectionFrame
+            label="Announcements"
+            className="min-h-[13rem] max-h-[15rem]"
+          >
             <AnnouncementsSection />
           </SectionFrame>
 
-          <SectionFrame label="Quick Actions" className="min-h-[16rem] max-h-[18rem]">
+          <SectionFrame
+            label="Quick Actions"
+            className="min-h-[16rem] max-h-[18rem]"
+          >
             <QuickActionsSection />
           </SectionFrame>
         </DashboardColumn>

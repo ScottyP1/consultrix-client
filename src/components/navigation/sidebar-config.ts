@@ -16,11 +16,11 @@ export type SideBarLink = {
 }
 
 export const studentNavLinks: SideBarLink[] = [
-  { title: 'Dashboard', icon: LayoutGrid, href: '/user/dashboard' },
-  { title: 'Syllabus', icon: BookOpen, href: '/user/syllabus' },
-  { title: 'Grades', icon: GraduationCap, href: '/user/grades' },
-  { title: 'Assignments', icon: FileText, href: '/user/assignments' },
-  { title: 'Calendar', icon: CalendarDays, href: '/user/calendar' },
-  { title: 'Messages', icon: MessageSquareText, href: '/user/messages' },
-  { title: 'Profile', icon: UserCircle2, href: '/user/profile' },
+  { title: 'Dashboard', icon: LayoutGrid, href: '/student/dashboard' },
+  { title: 'Syllabus', icon: BookOpen, href: '/student/syllabus' },
+  { title: 'Grades', icon: GraduationCap, href: '/student/grades' },
+  { title: 'Assignments', icon: FileText, href: '/student/assignments' },
+  { title: 'Calendar', icon: CalendarDays, href: '/student/calendar' },
+  { title: 'Messages', icon: MessageSquareText, href: '/student/messages' },
+  { title: 'Profile', icon: UserCircle2, href: '/student/profile' },
 ]
