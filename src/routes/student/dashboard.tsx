@@ -7,7 +7,7 @@ import ActionsSection from '#/components/dashboard/student/ActionsSection'
 import SectionFrame from '#/components/dashboard/SectionFrame'
 import StatsSection from '#/components/dashboard/student/StatsSection'
 import UpcomingSection from '#/components/dashboard/student/UpcomingSection'
-import Header from '#/components/dashboard/Header'
+import PageHeader from '#/components/PageHeader'
 
 import { LuCalendarDays } from 'react-icons/lu'
 import ProgressSection from '#/components/dashboard/student/ProgressSection'
@@ -22,7 +22,11 @@ export const Route = createFileRoute('/student/dashboard')({
 function RouteComponent() {
   return (
     <div className="flex flex-col gap-6">
-      <Header role="student" userName="tim" />
+      <PageHeader
+        eyebrow="Dashboard"
+        title={`Welcome back tim`}
+        subtitle="Here's your latest progress and upcoming activity."
+      />
 
       <DashboardGrid>
         <DashboardColumn span={9}>
