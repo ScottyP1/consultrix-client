@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import ItemContainer from '#/components/ItemContainer'
 import GlassContainer from '#/components/liquidGlass/GlassContainer'
-import { ProgressBar } from '#/components/dashboard/student/ProgressSection'
+import { ProgressBar } from '#/components/dashboard/ProgressSection'
 
 import {
   LuBookOpen,

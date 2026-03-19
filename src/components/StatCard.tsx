@@ -5,6 +5,7 @@ import GlassContainer from './liquidGlass/GlassContainer'
 type StatCardProps = {
   icon: IconType
   iconBgClassName: string
+  iconAccent: string
   label: string
   value: string
   className?: string
@@ -13,6 +14,7 @@ type StatCardProps = {
 const StatCard = ({
   icon: Icon,
   iconBgClassName,
+  iconAccent,
   label,
   value,
   className = '',
@@ -22,8 +24,15 @@ const StatCard = ({
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between gap-4">
           <div className="relative flex h-12 w-12 items-center justify-center">
-            <div className={`absolute inset-0 rounded-xl ${iconBgClassName}`} />
-            <Icon className="relative z-10 text-white" size={30} />
+            <div
+              className={`absolute inset-0 rounded-xl`}
+              style={{ backgroundColor: iconBgClassName }}
+            />
+            <Icon
+              className="relative z-10 text-white"
+              size={30}
+              color={iconAccent}
+            />
           </div>
 
           <h3 className="text-xl font-semibold tracking-tight text-white">

@@ -1,46 +1,9 @@
-const progressData = [
-  {
-    label: 'Javascript',
-    value: '85%',
-    color: 'bg-linear-to-r from-cyan-500 to-blue-500',
-    variant: 'Dashboard',
-  },
-  {
-    label: 'React',
-    value: '60%',
-    color: 'bg-linear-to-t from-sky-500 to-indigo-500',
-    variant: 'Dashboard',
-  },
-  {
-    label: 'Java',
-    value: '45%',
-    color: 'bg-linear-to-bl from-violet-500 to-fuchsia-500',
-    variant: 'Dashboard',
-  },
-  {
-    label: 'SpringBoot',
-    value: '30%',
-    color: 'bg-linear-65 from-purple-500 to-pink-500',
-    variant: 'Dashboard',
-  },
-  {
-    label: 'Java',
-    value: '45%',
-    color: 'bg-linear-to-bl from-violet-500 to-fuchsia-500',
-    variant: 'Dashboard',
-  },
-  {
-    label: 'SpringBoot',
-    value: '30%',
-    color: 'bg-linear-65 from-purple-500 to-pink-500',
-    variant: 'Dashboard',
-  },
-]
+import type { DashboardProgressItem } from '#/data/dashboard/types'
 
-const ProgressSection = () => {
+const ProgressSection = ({ items }: { items: DashboardProgressItem[] }) => {
   return (
     <div className="space-y-4">
-      {progressData.map((item) => (
+      {items.map((item) => (
         <ProgressBar
           key={item.label}
           label={item.label}

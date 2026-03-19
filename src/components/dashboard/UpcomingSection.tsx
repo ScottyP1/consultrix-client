@@ -1,29 +1,14 @@
-import GlassContainer from '#/components/liquidGlass/GlassContainer'
+import type { DashboardUpcomingItem } from '#/data/dashboard/types'
 import { LuBook } from 'react-icons/lu'
 
-const upcomingItems = [
-  {
-    assignment: 'Node.js Final Project',
-    module: '308',
-    date: 'Feb 23, 2026',
-  },
-  {
-    assignment: 'Node.js Final Project',
-    module: '308',
-    date: 'Feb 23, 2026',
-  },
-  {
-    assignment: 'Node.js Final Project',
-    module: '308',
-    date: 'Feb 23, 2026',
-  },
-]
-
-const UpcomingSection = () => {
+const UpcomingSection = ({ items }: { items: DashboardUpcomingItem[] }) => {
   return (
     <div className="flex flex-col gap-3">
-      {upcomingItems.map((item) => (
-        <div className="flex items-center justify-between rounded-[14px] px-4 py-3 shadow-[0px_10px_30px_-18px_rgba(0,0,0,0.45),0px_1px_0px_rgba(255,255,255,0.08)_inset,0px_0px_0px_1px_rgba(255,255,255,0.02)_inset] backdrop-blur-[10px]">
+      {items.map((item) => (
+        <div
+          key={`${item.assignment}-${item.date}`}
+          className="flex items-center justify-between rounded-[14px] px-4 py-3 shadow-[0px_10px_30px_-18px_rgba(0,0,0,0.45),0px_1px_0px_rgba(255,255,255,0.08)_inset,0px_0px_0px_1px_rgba(255,255,255,0.02)_inset] backdrop-blur-[10px]"
+        >
           <div className="space-y-1">
             <h3 className="text-base font-medium text-white">
               {item.assignment}

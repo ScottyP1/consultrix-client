@@ -1,38 +1,10 @@
 import type { IconType } from 'react-icons'
 import { LuCircleCheck, LuFile } from 'react-icons/lu'
+import type { StudentAssignmentItem, StudentAssignmentStatus } from '#/data/assignments/types'
 import GlassContainer from '../liquidGlass/GlassContainer'
 
-const assignments = [
-  {
-    title: 'Node.js SBA',
-    subtitle: 'Module name',
-    dueDate: 'Feb 20, 2026',
-    status: 'graded',
-  },
-  {
-    title: 'SQL KBA',
-    subtitle: 'Module name',
-    dueDate: 'Feb 20, 2026',
-    status: 'late',
-  },
-  {
-    title: 'React Quiz 3',
-    subtitle: 'Module name',
-    dueDate: 'Feb 20, 2026',
-    status: 'submitted',
-  },
-  {
-    title: 'Web foundations GLAB',
-    subtitle: 'Module name',
-    dueDate: 'Feb 20, 2026',
-    status: 'pending',
-  },
-] as const
-
-type AssignmentStatus = (typeof assignments)[number]['status']
-
 const statusMeta: Record<
-  AssignmentStatus,
+  StudentAssignmentStatus,
   {
     icon: IconType
     iconBackgroundClassName: string
@@ -73,10 +45,10 @@ const statusMeta: Record<
   },
 }
 
-const AssignmentsList = () => {
+const AssignmentsList = ({ items }: { items: StudentAssignmentItem[] }) => {
   return (
     <>
-      {assignments.map((item) => {
+      {items.map((item) => {
         const Icon = statusMeta[item.status].icon
 
         return (
