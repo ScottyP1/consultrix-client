@@ -1,11 +1,11 @@
 import axios from 'axios'
-
 import { getToken } from '@/lib/auth-token'
 
 let authToken = getToken()
+
 const apiBaseUrl = new URL(
   '/consultrix/',
-  import.meta.env.VITE_API_URL ?? 'http://localhost:8080',
+  import.meta.env.VITE_API_URL
 ).toString()
 
 export const api = axios.create({
