@@ -5,27 +5,33 @@ import { Outlet, useNavigate } from '@tanstack/react-router'
 import { useAuth } from '@/context/AuthContext'
 import { studentNavLinks } from '@/components/navigation/sidebar-config'
 import { requireAuth } from '@/lib/require-auth'
+import { getDefaultRouteForRole, ROLE_STUDENT } from '@/lib/auth-role'
 import SideBar from '#/components/navigation/SideBar'
 
 import Grainient from '#/components/Grainient'
 import MagicRings from '#/components/MagicRings'
 
 export const Route = createFileRoute('/student')({
-  beforeLoad: () => requireAuth(),
+  beforeLoad: () => requireAuth([ROLE_STUDENT]),
   component: RouteComponent,
 })
 
 function RouteComponent() {
   const navigate = useNavigate()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, role } = useAuth()
 
   useEffect(() => {
     if (!isAuthenticated) {
       void navigate({ to: '/auth/login', replace: true })
+      return
     }
-  }, [isAuthenticated, navigate])
 
-  if (!isAuthenticated) {
+    if (role && role !== ROLE_STUDENT) {
+      void navigate({ to: getDefaultRouteForRole(role), replace: true })
+    }
+  }, [isAuthenticated, navigate, role])
+
+  if (!isAuthenticated || (role && role !== ROLE_STUDENT)) {
     return null
   }
 

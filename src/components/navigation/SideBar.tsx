@@ -4,7 +4,9 @@ import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 
 import { useAuth } from '@/context/AuthContext'
 import type { SideBarLink } from '@/components/navigation/sidebar-config'
+import { ROLE_STUDENT } from '@/lib/auth-role'
 import GlassContainer from '../liquidGlass/GlassContainer'
+import { useStudent } from '#/hooks/student/useStudent'
 
 type SideBarProps = {
   links: SideBarLink[]
@@ -225,7 +227,14 @@ const SideBar = ({
 }: SideBarProps) => {
   const location = useLocation()
   const navigate = useNavigate()
-  const { logout } = useAuth()
+  const { logout, role } = useAuth()
+  const { data } = useStudent({ enabled: role === ROLE_STUDENT })
+
+  const resolvedName = data?.firstName?.trim() || name
+  const resolvedRoleLabel =
+    data?.role?.split('_')[1]?.toLowerCase() || roleLabel
+  const resolvedAvatarLabel =
+    data?.firstName?.trim()?.charAt(0).toUpperCase() || avatarLabel
 
   const dashboardLink = useMemo(
     () => links.find((item) => item.title === 'Dashboard') ?? links[0],
@@ -255,9 +264,9 @@ const SideBar = ({
       <DesktopSideBar
         links={links}
         pathname={location.pathname}
-        avatarLabel={avatarLabel}
-        name={name}
-        roleLabel={roleLabel}
+        avatarLabel={resolvedAvatarLabel}
+        name={resolvedName}
+        roleLabel={resolvedRoleLabel}
         onLogout={handleLogout}
       />
       <MobileSideBar

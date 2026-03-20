@@ -4,6 +4,7 @@ import { useNavigate } from '@tanstack/react-router'
 import GlassInput from '../liquidGlass/GlassInput'
 
 import { useLogin } from '@/hooks/useLogin'
+import { getDefaultRouteForRole } from '@/lib/auth-role'
 
 const LoginForm = () => {
   const navigate = useNavigate()
@@ -15,12 +16,12 @@ const LoginForm = () => {
     event.preventDefault()
 
     try {
-      await loginMutation.mutateAsync({
+      const session = await loginMutation.mutateAsync({
         email,
         password,
       })
 
-      void navigate({ to: '/student/dashboard' })
+      void navigate({ to: getDefaultRouteForRole(session.role) })
     } catch {}
   }
 

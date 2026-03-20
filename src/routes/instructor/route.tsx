@@ -5,24 +5,30 @@ import { Outlet, useNavigate } from '@tanstack/react-router'
 import { useAuth } from '@/context/AuthContext'
 import { instructorNavLinks } from '@/components/navigation/sidebar-config'
 import { requireAuth } from '@/lib/require-auth'
+import { getDefaultRouteForRole, ROLE_INSTRUCTOR } from '@/lib/auth-role'
 import SideBar from '#/components/navigation/SideBar'
 
 export const Route = createFileRoute('/instructor')({
-  beforeLoad: () => requireAuth(),
+  beforeLoad: () => requireAuth([ROLE_INSTRUCTOR]),
   component: RouteComponent,
 })
 
 function RouteComponent() {
   const navigate = useNavigate()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, role } = useAuth()
 
   useEffect(() => {
     if (!isAuthenticated) {
       void navigate({ to: '/auth/login', replace: true })
+      return
     }
-  }, [isAuthenticated, navigate])
 
-  if (!isAuthenticated) {
+    if (role && role !== ROLE_INSTRUCTOR) {
+      void navigate({ to: getDefaultRouteForRole(role), replace: true })
+    }
+  }, [isAuthenticated, navigate, role])
+
+  if (!isAuthenticated || (role && role !== ROLE_INSTRUCTOR)) {
     return null
   }
 

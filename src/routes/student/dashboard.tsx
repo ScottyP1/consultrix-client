@@ -24,16 +24,21 @@ import {
   studentUpcomingItems,
 } from '#/data/dashboard/student'
 
+import { useStudent } from '#/hooks/student/useStudent'
+
 export const Route = createFileRoute('/student/dashboard')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const { data } = useStudent()
+  const firstName = data?.firstName?.trim() || 'Student'
+
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
         eyebrow="Dashboard"
-        title={`Welcome back tim`}
+        title={`Welcome back ${firstName}`}
         subtitle="Here's your latest progress and upcoming activity."
       />
 

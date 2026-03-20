@@ -1,8 +1,9 @@
 import { useEffect } from 'react'
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 
-import { getToken } from '@/lib/auth-token'
 import { useAuth } from '@/context/AuthContext'
+import { getAuthSession } from '@/lib/auth-token'
+import { getDefaultRouteForRole } from '@/lib/auth-role'
 
 import HeroSection from '#/components/appIntro/HeroSection'
 import PartnersLoop from '#/components/UI/PartnersLoop'
@@ -16,8 +17,12 @@ import BenefitsSection from '#/components/appIntro/BenefitsSection'
 
 export const Route = createFileRoute('/')({
   beforeLoad: () => {
-    if (typeof window !== 'undefined' && getToken()) {
-      throw redirect({ to: '/student/dashboard' })
+    if (typeof window !== 'undefined') {
+      const session = getAuthSession()
+
+      if (session?.token) {
+        throw redirect({ to: getDefaultRouteForRole(session.role) })
+      }
     }
   },
   component: App,
@@ -25,13 +30,13 @@ export const Route = createFileRoute('/')({
 
 function App() {
   const navigate = useNavigate()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, role } = useAuth()
 
   useEffect(() => {
     if (isAuthenticated) {
-      void navigate({ to: '/student/dashboard', replace: true })
+      void navigate({ to: getDefaultRouteForRole(role), replace: true })
     }
-  }, [isAuthenticated, navigate])
+  }, [isAuthenticated, navigate, role])
 
   if (isAuthenticated) {
     return null
