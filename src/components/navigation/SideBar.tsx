@@ -6,7 +6,7 @@ import { useAuth } from '@/context/AuthContext'
 import type { SideBarLink } from '@/components/navigation/sidebar-config'
 import { ROLE_STUDENT } from '@/lib/auth-role'
 import GlassContainer from '../liquidGlass/GlassContainer'
-import { useMe } from '#/hooks/useMe'
+import { useStudent } from '#/hooks/student/useStudent'
 
 type SideBarProps = {
   links: SideBarLink[]
@@ -228,7 +228,7 @@ const SideBar = ({
   const location = useLocation()
   const navigate = useNavigate()
   const { logout, role } = useAuth()
-  const { data } = useMe({ enabled: role === ROLE_STUDENT })
+  const { data } = useStudent({ enabled: role === ROLE_STUDENT })
 
   const resolvedName = data?.firstName?.trim() || name
   const resolvedRoleLabel =
