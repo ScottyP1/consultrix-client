@@ -5,32 +5,51 @@ export interface LoginPayload {
   password: string
 }
 
-export interface LoginResponse {
+export interface LoginResponseData {
   token?: string
   accessToken?: string
   access_token?: string
-  data?:
-    | {
-        token?: string
-        accessToken?: string
-        access_token?: string
-      }
-    | undefined
+  role?: string
+  tokenType?: string
+  expiresInSeconds?: number
+}
+
+export interface LoginResponse extends LoginResponseData {
+  data?: LoginResponseData | undefined
+}
+
+export interface AuthSessionResponse {
+  token: string
+  role: string | null
+  tokenType?: string
+  expiresInSeconds?: number
 }
 
 export async function login(payload: LoginPayload) {
   const response = await api.post<LoginResponse>('/auth/login', payload)
-  return response.data
+  return normalizeLoginResponse(response.data)
 }
 
-export function extractAuthToken(response: LoginResponse) {
-  return (
+export function normalizeLoginResponse(
+  response: LoginResponse,
+): AuthSessionResponse {
+  const token =
     response.token ??
     response.accessToken ??
     response.access_token ??
     response.data?.token ??
     response.data?.accessToken ??
-    response.data?.access_token ??
-    null
-  )
+    response.data?.access_token
+
+  if (!token) {
+    throw new Error('Login response did not include an auth token.')
+  }
+
+  return {
+    token,
+    role: response.role ?? response.data?.role ?? null,
+    tokenType: response.tokenType ?? response.data?.tokenType,
+    expiresInSeconds:
+      response.expiresInSeconds ?? response.data?.expiresInSeconds,
+  }
 }

@@ -8,44 +8,60 @@ import {
 } from 'react'
 
 import { setApiAuthToken } from '@/api/client'
-import { getToken, removeToken, setToken as storeToken } from '@/lib/auth-token'
+import {
+  getAuthSession,
+  removeAuthSession,
+  setAuthSession as storeAuthSession,
+} from '@/lib/auth-token'
+
+type AuthSession = {
+  token: string
+  role: string | null
+}
 
 type AuthContextValue = {
   token: string | null
+  role: string | null
   isAuthenticated: boolean
-  setToken: (token: string) => void
+  setSession: (session: AuthSession) => void
   logout: () => void
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [token, setTokenState] = useState<string | null>(() => getToken())
+  const [session, setSessionState] = useState<AuthSession | null>(() =>
+    getAuthSession(),
+  )
+
+  const token = session?.token ?? null
+  const role = session?.role ?? null
 
   useEffect(() => {
     setApiAuthToken(token)
   }, [token])
 
-  const setToken = (nextToken: string) => {
-    storeToken(nextToken)
-    setApiAuthToken(nextToken)
-    setTokenState(nextToken)
+  const setSession = (nextSession: AuthSession) => {
+    storeAuthSession(nextSession)
+    setApiAuthToken(nextSession.token)
+    setSessionState(nextSession)
   }
 
   const logout = () => {
-    removeToken()
+    removeAuthSession()
     setApiAuthToken(null)
-    setTokenState(null)
+    setSessionState(null)
   }
 
   const value = useMemo(
     () => ({
       token,
+      role,
       isAuthenticated: Boolean(token),
-      setToken,
+      setSession,
       logout,
     }),
-    [token]
+    [role, token],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -8,13 +8,18 @@ import {
 
 import AuthCTA from '@/components/auth/AuthCTA'
 import { useAuth } from '@/context/AuthContext'
-import { getToken } from '@/lib/auth-token'
+import { getAuthSession } from '@/lib/auth-token'
+import { getDefaultRouteForRole } from '@/lib/auth-role'
 import Grainient from '#/components/Grainient'
 
 export const Route = createFileRoute('/auth')({
   beforeLoad: () => {
-    if (typeof window !== 'undefined' && getToken()) {
-      throw redirect({ to: '/student/dashboard' })
+    if (typeof window !== 'undefined') {
+      const session = getAuthSession()
+
+      if (session?.token) {
+        throw redirect({ to: getDefaultRouteForRole(session.role) })
+      }
     }
   },
   component: RouteComponent,
@@ -22,13 +27,13 @@ export const Route = createFileRoute('/auth')({
 
 function RouteComponent() {
   const navigate = useNavigate()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, role } = useAuth()
 
   useEffect(() => {
     if (isAuthenticated) {
-      void navigate({ to: '/student/dashboard', replace: true })
+      void navigate({ to: getDefaultRouteForRole(role), replace: true })
     }
-  }, [isAuthenticated, navigate])
+  }, [isAuthenticated, navigate, role])
 
   if (isAuthenticated) {
     return null

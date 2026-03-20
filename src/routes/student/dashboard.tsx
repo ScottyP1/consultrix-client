@@ -24,11 +24,15 @@ import {
   studentUpcomingItems,
 } from '#/data/dashboard/student'
 
+import { useMe } from '#/hooks/useMe'
+
 export const Route = createFileRoute('/student/dashboard')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const { data, isLoading } = useMe()
+  console.log(data)
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
