@@ -1,0 +1,82 @@
+import type { AttendanceCohort } from './types'
+
+export const instructorAttendanceCohorts: AttendanceCohort[] = [
+  {
+    id: 'cohort-12',
+    name: 'Cohort 12',
+    term: 'Spring 2026',
+    students: [
+      { id: 'stu-01', name: 'Jordan Patel', email: 'jordan@example.com' },
+      { id: 'stu-02', name: 'Mia Rivera', email: 'mia@example.com' },
+      { id: 'stu-03', name: 'Caleb Wright', email: 'caleb@example.com' },
+      { id: 'stu-04', name: 'Ariana Brooks', email: 'ariana@example.com' },
+    ],
+    sessions: [
+      { id: 'sess-01', label: 'Session 1', date: 'Mar 3, 2026', topic: 'Node Review' },
+      { id: 'sess-02', label: 'Session 2', date: 'Mar 5, 2026', topic: 'Node SBA Lab' },
+      { id: 'sess-03', label: 'Session 3', date: 'Mar 10, 2026', topic: 'SQL Joins' },
+      { id: 'sess-04', label: 'Session 4', date: 'Mar 12, 2026', topic: 'SQL KBA Workshop' },
+      { id: 'sess-05', label: 'Session 5', date: 'Mar 17, 2026', topic: 'React Components' },
+      { id: 'sess-06', label: 'Session 6', date: 'Mar 19, 2026', topic: 'React State' },
+    ],
+    records: [
+      { studentId: 'stu-01', sessionId: 'sess-01', status: 'present', note: 'On time.' },
+      { studentId: 'stu-01', sessionId: 'sess-02', status: 'present', note: 'Participated well.' },
+      { studentId: 'stu-01', sessionId: 'sess-03', status: 'late', note: 'Arrived 12 minutes late.' },
+      { studentId: 'stu-01', sessionId: 'sess-04', status: 'present', note: 'Fully engaged.' },
+      { studentId: 'stu-01', sessionId: 'sess-05', status: 'present', note: 'Strong participation.' },
+      { studentId: 'stu-01', sessionId: 'sess-06', status: 'present', note: 'No issues.' },
+
+      { studentId: 'stu-02', sessionId: 'sess-01', status: 'present', note: 'On time.' },
+      { studentId: 'stu-02', sessionId: 'sess-02', status: 'late', note: 'Late due to commute delay.' },
+      { studentId: 'stu-02', sessionId: 'sess-03', status: 'present', note: 'No issues.' },
+      { studentId: 'stu-02', sessionId: 'sess-04', status: 'excused', note: 'Approved appointment.' },
+      { studentId: 'stu-02', sessionId: 'sess-05', status: 'present', note: 'Completed pair activity.' },
+      { studentId: 'stu-02', sessionId: 'sess-06', status: 'present', note: 'Good session.' },
+
+      { studentId: 'stu-03', sessionId: 'sess-01', status: 'absent', note: 'No communication.' },
+      { studentId: 'stu-03', sessionId: 'sess-02', status: 'present', note: 'Made up missed work.' },
+      { studentId: 'stu-03', sessionId: 'sess-03', status: 'absent', note: 'Second absence this month.' },
+      { studentId: 'stu-03', sessionId: 'sess-04', status: 'late', note: 'Joined after break.' },
+      { studentId: 'stu-03', sessionId: 'sess-05', status: 'present', note: 'Improved participation.' },
+      { studentId: 'stu-03', sessionId: 'sess-06', status: 'absent', note: 'Needs follow-up.' },
+
+      { studentId: 'stu-04', sessionId: 'sess-01', status: 'present', note: 'On time.' },
+      { studentId: 'stu-04', sessionId: 'sess-02', status: 'present', note: 'Strong collaboration.' },
+      { studentId: 'stu-04', sessionId: 'sess-03', status: 'present', note: 'No issues.' },
+      { studentId: 'stu-04', sessionId: 'sess-04', status: 'present', note: 'Fully engaged.' },
+      { studentId: 'stu-04', sessionId: 'sess-05', status: 'late', note: 'Traffic delay.' },
+      { studentId: 'stu-04', sessionId: 'sess-06', status: 'present', note: 'Participated actively.' },
+    ],
+  },
+  {
+    id: 'cohort-11',
+    name: 'Cohort 11',
+    term: 'Winter 2026',
+    students: [
+      { id: 'stu-11', name: 'Evan Ross', email: 'evan@example.com' },
+      { id: 'stu-12', name: 'Nina Cole', email: 'nina@example.com' },
+      { id: 'stu-13', name: 'Sofia Dean', email: 'sofia@example.com' },
+    ],
+    sessions: [
+      { id: 'sess-11', label: 'Session 1', date: 'Feb 2, 2026', topic: 'HTML Review' },
+      { id: 'sess-12', label: 'Session 2', date: 'Feb 4, 2026', topic: 'CSS Layouts' },
+      { id: 'sess-13', label: 'Session 3', date: 'Feb 9, 2026', topic: 'React Intro' },
+      { id: 'sess-14', label: 'Session 4', date: 'Feb 11, 2026', topic: 'React Props' },
+    ],
+    records: [
+      { studentId: 'stu-11', sessionId: 'sess-11', status: 'present', note: 'On time.' },
+      { studentId: 'stu-11', sessionId: 'sess-12', status: 'present', note: 'No issues.' },
+      { studentId: 'stu-11', sessionId: 'sess-13', status: 'late', note: 'Late arrival.' },
+      { studentId: 'stu-11', sessionId: 'sess-14', status: 'present', note: 'Good participation.' },
+      { studentId: 'stu-12', sessionId: 'sess-11', status: 'present', note: 'On time.' },
+      { studentId: 'stu-12', sessionId: 'sess-12', status: 'present', note: 'Fully engaged.' },
+      { studentId: 'stu-12', sessionId: 'sess-13', status: 'present', note: 'No issues.' },
+      { studentId: 'stu-12', sessionId: 'sess-14', status: 'excused', note: 'Approved absence.' },
+      { studentId: 'stu-13', sessionId: 'sess-11', status: 'absent', note: 'No communication.' },
+      { studentId: 'stu-13', sessionId: 'sess-12', status: 'late', note: 'Late check-in.' },
+      { studentId: 'stu-13', sessionId: 'sess-13', status: 'absent', note: 'Needs outreach.' },
+      { studentId: 'stu-13', sessionId: 'sess-14', status: 'present', note: 'Returned and participated.' },
+    ],
+  },
+]

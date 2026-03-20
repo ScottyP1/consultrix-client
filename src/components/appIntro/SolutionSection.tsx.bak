@@ -1,0 +1,113 @@
+import type React from 'react'
+import {
+  LuGraduationCap,
+  LuUsers,
+  LuBuilding2,
+  LuClipboard,
+  LuChartNoAxesColumn,
+  LuAward,
+  LuBuilding,
+} from 'react-icons/lu'
+import GlassContainer from '../liquidGlass/GlassContainer'
+
+const data = [
+  {
+    icon: <LuBuilding2 size={28} />,
+    label: 'Facility',
+    bg: 'linear-gradient(145deg, #6B28D9, #2A0C52)',
+    glow: 'rgba(123, 64, 255, 0.45)',
+  },
+  {
+    icon: <LuUsers size={28} />,
+    label: 'Cohort',
+    bg: 'linear-gradient(145deg, #1C6CEB, #0A2E5E)',
+    glow: 'rgba(36, 119, 255, 0.4)',
+  },
+  {
+    icon: <LuGraduationCap size={28} />,
+    label: 'Student Training',
+    bg: 'linear-gradient(145deg, #1FAE3B, #0C3A16)',
+    glow: 'rgba(52, 226, 110, 0.4)',
+  },
+  {
+    icon: <LuClipboard size={28} />,
+    label: 'Assessment',
+    bg: 'linear-gradient(145deg, #C2A500, #3E3300)',
+    glow: 'rgba(245, 210, 70, 0.45)',
+  },
+  {
+    icon: <LuChartNoAxesColumn size={28} />,
+    label: 'Placement',
+    bg: 'linear-gradient(145deg, #B90B0B, #3A0606)',
+    glow: 'rgba(255, 70, 70, 0.35)',
+  },
+  {
+    icon: <LuBuilding size={28} />,
+    label: 'Consultancy',
+    bg: 'linear-gradient(145deg, #7A2EE6, #2A0E52)',
+    glow: 'rgba(155, 92, 255, 0.35)',
+  },
+  {
+    icon: <LuAward size={28} />,
+    label: 'Alumni',
+    bg: 'linear-gradient(145deg, #19A329, #0A3810)',
+    glow: 'rgba(56, 222, 86, 0.35)',
+  },
+]
+const SolutionSection = () => {
+  return (
+    <div className="flex flex-col gap-10">
+      <h2 className="text-center text-xl font-semibold uppercase tracking-[0.5em] text-white/80">
+        Solution Overview
+      </h2>
+
+      <div className="relative mx-auto w-full max-w-5xl">
+        <div className="grid grid-cols-3 gap-8 sm:grid-cols-3 lg:grid-cols-7">
+          {data.map((item) => (
+            <SolutionCard
+              key={item.label}
+              icon={item.icon}
+              label={item.label}
+              bg={item.bg}
+              glow={item.glow}
+            />
+          ))}
+        </div>
+      </div>
+
+      <GlassContainer className="flex justify-center items-center h-18 md:h-12 mx-auto max-w-4xl rounded-2xl border-white/10 px-6 py-4 text-center text-sm text-white/65">
+        This platform connects physical training infrastructure, academic
+        delivery, and workforce placement into a single role-based system.
+      </GlassContainer>
+    </div>
+  )
+}
+
+const SolutionCard = ({
+  icon,
+  label,
+  bg,
+  glow,
+}: {
+  icon: React.ReactElement
+  label: string
+  bg: string
+  glow: string
+}) => {
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <div
+        className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 text-white shadow-[0_10px_24px_rgba(0,0,0,0.5)]"
+        style={{
+          background: bg,
+          boxShadow: `0 0 24px ${glow}, 0 10px 28px rgba(0,0,0,0.45)`,
+        }}
+      >
+        {icon}
+      </div>
+      <span className="text-sm tracking-wide text-white/80">{label}</span>
+    </div>
+  )
+}
+
+export default SolutionSection
