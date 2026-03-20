@@ -3,9 +3,13 @@ import axios from 'axios'
 import { getToken } from '@/lib/auth-token'
 
 let authToken = getToken()
+const apiBaseUrl = new URL(
+  '/consultrix/',
+  import.meta.env.VITE_API_URL ?? 'http://localhost:8080',
+).toString()
 
 export const api = axios.create({
-  baseURL: 'http://localhost:8080/consultrix/',
+  baseURL: apiBaseUrl,
   headers: {
     'Content-Type': 'application/json',
   },

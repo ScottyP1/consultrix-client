@@ -1,22 +1,12 @@
-import { api } from './client'
+import {
+  getMe,
+  login as loginRequest,
+  type AuthMeResponse,
+  type LoginPayload,
+  type LoginResponse,
+} from './consultrix'
 
-export interface LoginPayload {
-  email: string
-  password: string
-}
-
-export interface LoginResponseData {
-  token?: string
-  accessToken?: string
-  access_token?: string
-  role?: string
-  tokenType?: string
-  expiresInSeconds?: number
-}
-
-export interface LoginResponse extends LoginResponseData {
-  data?: LoginResponseData | undefined
-}
+export type { AuthMeResponse, LoginPayload, LoginResponse }
 
 export interface AuthSessionResponse {
   token: string
@@ -26,30 +16,23 @@ export interface AuthSessionResponse {
 }
 
 export async function login(payload: LoginPayload) {
-  const response = await api.post<LoginResponse>('/auth/login', payload)
-  return normalizeLoginResponse(response.data)
+  const response = await loginRequest(payload)
+  return normalizeLoginResponse(response)
 }
 
 export function normalizeLoginResponse(
   response: LoginResponse,
 ): AuthSessionResponse {
-  const token =
-    response.token ??
-    response.accessToken ??
-    response.access_token ??
-    response.data?.token ??
-    response.data?.accessToken ??
-    response.data?.access_token
-
-  if (!token) {
+  if (!response.accessToken) {
     throw new Error('Login response did not include an auth token.')
   }
 
   return {
-    token,
-    role: response.role ?? response.data?.role ?? null,
-    tokenType: response.tokenType ?? response.data?.tokenType,
-    expiresInSeconds:
-      response.expiresInSeconds ?? response.data?.expiresInSeconds,
+    token: response.accessToken,
+    role: response.role ?? null,
+    tokenType: response.tokenType,
+    expiresInSeconds: response.expiresInSeconds,
   }
 }
+
+export { getMe }

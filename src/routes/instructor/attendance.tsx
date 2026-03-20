@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { createFileRoute } from '@tanstack/react-router'
 
@@ -9,44 +9,177 @@ import AttendanceTable from '#/components/attendance/AttendanceTable'
 import AttendanceToolbar from '#/components/attendance/AttendanceToolbar'
 import SectionFrame from '#/components/dashboard/SectionFrame'
 import GlassContainer from '#/components/liquidGlass/GlassContainer'
-import { instructorAttendanceCohorts } from '#/data/attendance/instructor'
-import type { AttendanceStatus } from '#/data/attendance/types'
+import type {
+  AttendanceCohort,
+  AttendanceRecord,
+  AttendanceStatus,
+} from '#/data/attendance/types'
+import { useInstructorWorkspaceData } from '#/hooks/instructor/useInstructorWorkspaceData'
+import { formatDate, formatStatusLabel } from '#/lib/consultrix-format'
+import { deriveInstructorCohorts, getStudentName } from '#/lib/instructor-workspace'
 
 export const Route = createFileRoute('/instructor/attendance')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const [cohorts, setCohorts] = useState(instructorAttendanceCohorts)
-  const [selectedCohortId, setSelectedCohortId] = useState(
-    instructorAttendanceCohorts[0]?.id ?? '',
-  )
+  const {
+    studentsQuery,
+    modulesQuery,
+    assignmentsQuery,
+    attendanceQuery,
+    isLoading,
+    error,
+  } = useInstructorWorkspaceData()
   const [activeView, setActiveView] = useState<'take' | 'history'>('take')
   const [statusFilter, setStatusFilter] = useState<'all' | AttendanceStatus>(
     'all',
   )
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedSessionId, setSelectedSessionId] = useState(
-    instructorAttendanceCohorts[0]?.sessions.at(-1)?.id ??
-      instructorAttendanceCohorts[0]?.sessions[0]?.id ??
-      '',
-  )
+  const [selectedCohortId, setSelectedCohortId] = useState('')
+  const [selectedSessionId, setSelectedSessionId] = useState('')
   const [selectedCell, setSelectedCell] = useState<{
     studentId: string
     sessionId: string
   } | null>(null)
+  const [localRecordOverrides, setLocalRecordOverrides] = useState<
+    Record<string, AttendanceRecord>
+  >({})
+
+  const cohorts = useMemo<AttendanceCohort[]>(() => {
+    const students = studentsQuery.data ?? []
+    const modules = modulesQuery.data ?? []
+    const assignments = assignmentsQuery.data ?? []
+    const attendance = attendanceQuery.data ?? []
+    const derivedCohorts = deriveInstructorCohorts({
+      students,
+      modules,
+      assignments,
+      attendance,
+    })
+
+    return derivedCohorts.map((cohort) => {
+      const cohortStudents = students
+        .filter((student) => student.cohort?.id === cohort.id)
+        .map((student) => ({
+          id: String(student.id),
+          name: getStudentName(student),
+          email: student.email,
+        }))
+      const sessionDates = Array.from(
+        new Set(
+          attendance
+            .filter((record) => record.cohort.id === cohort.id)
+            .map((record) => record.attendanceDate),
+        ),
+      )
+        .sort((left, right) => new Date(left).getTime() - new Date(right).getTime())
+
+      const sessions =
+        sessionDates.length > 0
+          ? sessionDates.map((date) => ({
+              id: date,
+              label: formatDate(date),
+              date: formatDate(date),
+              topic: cohort.name,
+            }))
+          : [
+              {
+                id: new Date().toISOString().slice(0, 10),
+                label: 'Today',
+                date: formatDate(new Date().toISOString()),
+                topic: cohort.name,
+              },
+            ]
+
+      const records = attendance
+        .filter((record) => record.cohort.id === cohort.id)
+        .map((record) => ({
+          studentId: String(record.student.id),
+          sessionId: record.attendanceDate,
+          status: toAttendanceStatus(record.status),
+          note: record.note ?? '',
+        }))
+
+      return {
+        id: String(cohort.id),
+        name: cohort.name,
+        term: cohort.term,
+        students: cohortStudents,
+        sessions,
+        records,
+      }
+    })
+  }, [
+    assignmentsQuery.data,
+    attendanceQuery.data,
+    modulesQuery.data,
+    studentsQuery.data,
+  ])
+
+  useEffect(() => {
+    if (!selectedCohortId && cohorts[0]?.id) {
+      setSelectedCohortId(cohorts[0].id)
+    }
+  }, [cohorts, selectedCohortId])
 
   const selectedCohort =
     cohorts.find((cohort) => cohort.id === selectedCohortId) ?? cohorts[0]
 
-  if (!selectedCohort) {
-    return null
+  useEffect(() => {
+    if (!selectedCohort) {
+      return
+    }
+
+    setSelectedSessionId((current) =>
+      selectedCohort.sessions.some((session) => session.id === current)
+        ? current
+        : (selectedCohort.sessions.at(-1)?.id ?? selectedCohort.sessions[0]?.id ?? ''),
+    )
+  }, [selectedCohort])
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-6">
+        <PageHeader
+          eyebrow="Attendance"
+          title="Loading attendance"
+          subtitle="Fetching live cohort attendance data."
+        />
+      </div>
+    )
   }
 
+  if (error) {
+    return (
+      <div className="flex flex-col gap-6">
+        <PageHeader
+          eyebrow="Attendance"
+          title="Attendance unavailable"
+          subtitle={error.message}
+        />
+      </div>
+    )
+  }
+
+  if (!selectedCohort) {
+    return (
+      <div className="flex flex-col gap-6">
+        <PageHeader
+          eyebrow="Attendance"
+          title="No cohorts available"
+          subtitle="No live attendance cohorts were returned for this instructor."
+        />
+      </div>
+    )
+  }
+
+  const mergedRecords = mergeAttendanceRecords(
+    selectedCohort.records,
+    localRecordOverrides,
+  )
   const selectedSession =
-    selectedCohort.sessions.find(
-      (session) => session.id === selectedSessionId,
-    ) ??
+    selectedCohort.sessions.find((session) => session.id === selectedSessionId) ??
     selectedCohort.sessions.at(-1) ??
     selectedCohort.sessions[0]
 
@@ -60,28 +193,26 @@ function RouteComponent() {
       return false
     }
 
-    if (statusFilter === 'all') {
+    if (statusFilter === 'all' || !selectedSession) {
       return true
     }
 
-    return selectedCohort.records.some(
+    return mergedRecords.some(
       (record) =>
-        record.studentId === student.id && record.status === statusFilter,
+        record.studentId === student.id &&
+        record.sessionId === selectedSession.id &&
+        record.status === statusFilter,
     )
   })
 
   const selectedStudent = selectedCell
-    ? selectedCohort.students.find(
-        (student) => student.id === selectedCell.studentId,
-      )
+    ? selectedCohort.students.find((student) => student.id === selectedCell.studentId)
     : undefined
   const detailSession = selectedCell
-    ? selectedCohort.sessions.find(
-        (session) => session.id === selectedCell.sessionId,
-      )
+    ? selectedCohort.sessions.find((session) => session.id === selectedCell.sessionId)
     : undefined
   const selectedRecord = selectedCell
-    ? (selectedCohort.records.find(
+    ? (mergedRecords.find(
         (record) =>
           record.studentId === selectedCell.studentId &&
           record.sessionId === selectedCell.sessionId,
@@ -92,91 +223,19 @@ function RouteComponent() {
         note: '',
       })
     : undefined
-
   const selectedSessionRecords = selectedSession
-    ? selectedCohort.records.filter(
-        (record) => record.sessionId === selectedSession.id,
-      )
+    ? mergedRecords.filter((record) => record.sessionId === selectedSession.id)
     : []
 
-  const updateSelectedRecord = (
-    updater: (record: {
-      studentId: string
-      sessionId: string
-      status: AttendanceStatus
-      note?: string
-    }) => {
-      studentId: string
-      sessionId: string
-      status: AttendanceStatus
-      note?: string
-    },
-  ) => {
-    if (!selectedCell) {
-      return
-    }
-
-    setCohorts((currentCohorts) =>
-      currentCohorts.map((cohort) => {
-        if (cohort.id !== selectedCohort.id) {
-          return cohort
-        }
-
-        const existingRecord = cohort.records.find(
-          (record) =>
-            record.studentId === selectedCell.studentId &&
-            record.sessionId === selectedCell.sessionId,
-        ) ?? {
-          studentId: selectedCell.studentId,
-          sessionId: selectedCell.sessionId,
-          status: 'absent' as const,
-          note: '',
-        }
-
-        const nextRecord = updater(existingRecord)
-        const hasExistingRecord = cohort.records.some(
-          (record) =>
-            record.studentId === selectedCell.studentId &&
-            record.sessionId === selectedCell.sessionId,
-        )
-
-        return {
-          ...cohort,
-          records: hasExistingRecord
-            ? cohort.records.map((record) =>
-                record.studentId === selectedCell.studentId &&
-                record.sessionId === selectedCell.sessionId
-                  ? nextRecord
-                  : record,
-              )
-            : [...cohort.records, nextRecord],
-        }
-      }),
-    )
-  }
-
-  const updateAttendanceRecord = (
+  const updateLocalRecord = (
     studentId: string,
     sessionId: string,
-    updater: (record: {
-      studentId: string
-      sessionId: string
-      status: AttendanceStatus
-      note?: string
-    }) => {
-      studentId: string
-      sessionId: string
-      status: AttendanceStatus
-      note?: string
-    },
+    updater: (record: AttendanceRecord) => AttendanceRecord,
   ) => {
-    setCohorts((currentCohorts) =>
-      currentCohorts.map((cohort) => {
-        if (cohort.id !== selectedCohort.id) {
-          return cohort
-        }
-
-        const existingRecord = cohort.records.find(
+    setLocalRecordOverrides((current) => {
+      const currentRecord =
+        current[`${studentId}:${sessionId}`] ??
+        mergedRecords.find(
           (record) =>
             record.studentId === studentId && record.sessionId === sessionId,
         ) ?? {
@@ -186,24 +245,11 @@ function RouteComponent() {
           note: '',
         }
 
-        const nextRecord = updater(existingRecord)
-        const hasExistingRecord = cohort.records.some(
-          (record) =>
-            record.studentId === studentId && record.sessionId === sessionId,
-        )
-
-        return {
-          ...cohort,
-          records: hasExistingRecord
-            ? cohort.records.map((record) =>
-                record.studentId === studentId && record.sessionId === sessionId
-                  ? nextRecord
-                  : record,
-              )
-            : [...cohort.records, nextRecord],
-        }
-      }),
-    )
+      return {
+        ...current,
+        [`${studentId}:${sessionId}`]: updater(currentRecord),
+      }
+    })
   }
 
   return (
@@ -211,7 +257,7 @@ function RouteComponent() {
       <PageHeader
         eyebrow="Attendance"
         title="Instructor Attendance"
-        subtitle="Take attendance quickly in the morning, then switch to history when you need to audit or revise older sessions."
+        subtitle="Live attendance history with local review controls."
       />
 
       <AttendanceToolbar
@@ -223,14 +269,6 @@ function RouteComponent() {
         selectedCohortId={selectedCohort.id}
         onCohortChange={(value) => {
           setSelectedCohortId(value)
-          const nextCohort =
-            cohorts.find((cohort) => cohort.id === value) ?? cohorts[0]
-
-          setSelectedSessionId(
-            nextCohort?.sessions.at(-1)?.id ??
-              nextCohort?.sessions[0]?.id ??
-              '',
-          )
           setSelectedCell(null)
         }}
         statusFilter={statusFilter}
@@ -267,127 +305,22 @@ function RouteComponent() {
       {activeView === 'take' && selectedSession ? (
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
           <SectionFrame
-            label={`${selectedCohort.name} Morning Roster`}
+            label={`${selectedCohort.name} · ${selectedSession.label}`}
             className="min-h-[36rem]"
           >
-            <div className="space-y-5">
-              <GlassContainer className="p-5">
-                <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-end">
-                  <div>
-                    <p className="text-[11px] uppercase tracking-[0.24em] text-white/45">
-                      Active Session
-                    </p>
-                    <p className="mt-2 text-lg font-semibold text-white">
-                      {selectedSession.label}
-                    </p>
-                    <p className="text-sm text-white/45">
-                      {selectedSession.date} · {selectedSession.topic}
-                    </p>
-                  </div>
-
-                  <label className="space-y-2">
-                    <span className="text-[11px] uppercase tracking-[0.24em] text-white/45">
-                      Session
-                    </span>
-                    <select
-                      value={selectedSession.id}
-                      onChange={(event) => {
-                        const nextSessionId = event.target.value
-                        setSelectedSessionId(nextSessionId)
-                        setSelectedCell((current) =>
-                          current
-                            ? { ...current, sessionId: nextSessionId }
-                            : current,
-                        )
-                      }}
-                      className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none"
-                    >
-                      {selectedCohort.sessions.map((session) => (
-                        <option
-                          key={session.id}
-                          value={session.id}
-                          className="bg-slate-950"
-                        >
-                          {session.label} · {session.date}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      filteredStudents.forEach((student) => {
-                        updateAttendanceRecord(
-                          student.id,
-                          selectedSession.id,
-                          (record) => ({
-                            ...record,
-                            status: 'present',
-                          }),
-                        )
-                      })
-                    }}
-                    className="rounded-xl bg-emerald-600 px-4 py-3 text-sm font-medium text-white transition hover:bg-emerald-500"
-                  >
-                    Mark Visible Present
-                  </button>
-                </div>
-              </GlassContainer>
-
-              <AttendanceRoster
-                students={filteredStudents}
-                session={selectedSession}
-                records={selectedSessionRecords}
-                selectedStudentId={selectedCell?.studentId}
-                onSelectStudent={(studentId) =>
-                  setSelectedCell({ studentId, sessionId: selectedSession.id })
-                }
-                onStatusChange={(studentId, status) =>
-                  updateAttendanceRecord(
-                    studentId,
-                    selectedSession.id,
-                    (record) => ({
-                      ...record,
-                      status,
-                    }),
-                  )
-                }
-              />
-            </div>
-          </SectionFrame>
-
-          <AttendanceDetailPanel
-            student={selectedStudent}
-            session={detailSession ?? selectedSession}
-            record={selectedRecord}
-            onStatusChange={(status) =>
-              updateSelectedRecord((record) => ({
-                ...record,
-                status,
-              }))
-            }
-            onNoteChange={(note) =>
-              updateSelectedRecord((record) => ({
-                ...record,
-                note,
-              }))
-            }
-          />
-        </div>
-      ) : (
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
-          <SectionFrame
-            label={`${selectedCohort.name} Session Matrix`}
-            className="min-h-[36rem]"
-          >
-            <AttendanceTable
+            <AttendanceRoster
               students={filteredStudents}
-              sessions={selectedCohort.sessions}
-              records={selectedCohort.records}
-              selectedCell={selectedCell}
-              onSelectCell={(studentId, sessionId) =>
-                setSelectedCell({ studentId, sessionId })
+              session={selectedSession}
+              records={selectedSessionRecords}
+              selectedStudentId={selectedCell?.studentId}
+              onSelectStudent={(studentId) =>
+                setSelectedCell({ studentId, sessionId: selectedSession.id })
+              }
+              onStatusChange={(studentId, status) =>
+                updateLocalRecord(studentId, selectedSession.id, (record) => ({
+                  ...record,
+                  status,
+                }))
               }
             />
           </SectionFrame>
@@ -396,21 +329,78 @@ function RouteComponent() {
             student={selectedStudent}
             session={detailSession}
             record={selectedRecord}
-            onStatusChange={(status) =>
-              updateSelectedRecord((record) => ({
-                ...record,
-                status,
-              }))
-            }
-            onNoteChange={(note) =>
-              updateSelectedRecord((record) => ({
-                ...record,
-                note,
-              }))
-            }
+            onStatusChange={(status) => {
+              if (!selectedCell) {
+                return
+              }
+
+              updateLocalRecord(
+                selectedCell.studentId,
+                selectedCell.sessionId,
+                (record) => ({
+                  ...record,
+                  status,
+                }),
+              )
+            }}
+            onNoteChange={(note) => {
+              if (!selectedCell) {
+                return
+              }
+
+              updateLocalRecord(
+                selectedCell.studentId,
+                selectedCell.sessionId,
+                (record) => ({
+                  ...record,
+                  note,
+                }),
+              )
+            }}
           />
         </div>
+      ) : (
+        <GlassContainer className="p-0">
+          <AttendanceTable
+            students={filteredStudents}
+            sessions={selectedCohort.sessions}
+            records={mergedRecords}
+            selectedCell={selectedCell}
+            onSelectCell={(studentId, sessionId) =>
+              setSelectedCell({ studentId, sessionId })
+            }
+          />
+        </GlassContainer>
       )}
+
+      <p className="text-xs text-white/35">
+        Attendance data is loaded live from the API. Edits in this view remain local until write actions are wired.
+      </p>
     </div>
   )
+}
+
+function mergeAttendanceRecords(
+  records: AttendanceRecord[],
+  overrides: Record<string, AttendanceRecord>,
+) {
+  const merged = new Map(
+    records.map((record) => [`${record.studentId}:${record.sessionId}`, record]),
+  )
+
+  Object.entries(overrides).forEach(([key, record]) => {
+    merged.set(key, record)
+  })
+
+  return Array.from(merged.values())
+}
+
+function toAttendanceStatus(status: string): AttendanceStatus {
+  const normalized = status.toLowerCase()
+
+  if (normalized === 'present' || normalized === 'late') {
+    return normalized
+  }
+
+  return normalized === 'excused' ? 'excused' : 'absent'
 }

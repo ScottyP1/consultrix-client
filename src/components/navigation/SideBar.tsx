@@ -4,9 +4,9 @@ import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 
 import { useAuth } from '@/context/AuthContext'
 import type { SideBarLink } from '@/components/navigation/sidebar-config'
-import { ROLE_STUDENT } from '@/lib/auth-role'
+import { formatStatusLabel } from '@/lib/consultrix-format'
 import GlassContainer from '../liquidGlass/GlassContainer'
-import { useStudent } from '#/hooks/student/useStudent'
+import { useMe } from '#/hooks/useMe'
 
 type SideBarProps = {
   links: SideBarLink[]
@@ -228,11 +228,11 @@ const SideBar = ({
   const location = useLocation()
   const navigate = useNavigate()
   const { logout, role } = useAuth()
-  const { data } = useStudent({ enabled: role === ROLE_STUDENT })
+  const { data } = useMe(Boolean(role))
 
-  const resolvedName = data?.firstName?.trim() || name
-  const resolvedRoleLabel =
-    data?.role?.split('_')[1]?.toLowerCase() || roleLabel
+  const resolvedName =
+    [data?.firstName, data?.lastName].filter(Boolean).join(' ').trim() || name
+  const resolvedRoleLabel = role ? formatStatusLabel(role.replace(/^ROLE_/, '')) : roleLabel
   const resolvedAvatarLabel =
     data?.firstName?.trim()?.charAt(0).toUpperCase() || avatarLabel
 
