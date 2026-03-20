@@ -2,7 +2,7 @@ type GradeStatus = 'graded' | 'pending' | 'missing'
 
 type GradesAssignmentRowProps = {
   title: string
-  weightPercent: number
+  maxScore: number
   gradePercent: number | null
   status: GradeStatus
 }
@@ -21,14 +21,14 @@ const gradeClassNames: Record<GradeStatus, string> = {
 
 const GradesAssignmentRow = ({
   title,
-  weightPercent,
+  maxScore,
   gradePercent,
   status,
 }: GradesAssignmentRowProps) => {
   return (
     <div className="grid grid-cols-[minmax(0,2.2fr)_0.8fr_0.8fr_0.8fr] items-center gap-4 border-t border-white/6 py-4 text-sm">
       <div className="font-medium text-white">{title}</div>
-      <div className="text-white/55">{weightPercent}%</div>
+      <div className="text-white/55">{maxScore}</div>
       <div className={`font-medium ${gradeClassNames[status]}`}>
         {gradePercent === null ? '-' : `${gradePercent}%`}
       </div>

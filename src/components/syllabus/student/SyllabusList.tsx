@@ -12,62 +12,24 @@ import {
   LuClock,
 } from 'react-icons/lu'
 
-const syllabusData = [
-  {
-    module: 'Javascript fundamentals',
-    completionPercentage: '85%',
-    moduleDuration: '4 weeks',
-    assignments: [
-      { status: 'complete', title: 'dummy title' },
-      { status: 'incomplete', title: 'dummy title' },
-      { status: 'complete', title: 'dummy title' },
-      { status: 'complete', title: 'dummy title' },
-      { status: 'incomplete', title: 'dummy title' },
-      { status: 'complete', title: 'dummy title' },
-    ],
-  },
-  {
-    module: 'React',
-    completionPercentage: '45%',
-    moduleDuration: '1 week',
-    assignments: [
-      { status: 'complete', title: 'dummy title' },
-      { status: 'incomplete', title: 'dummy title' },
-      { status: 'complete', title: 'dummy title' },
-      { status: 'incomplete', title: 'dummy title' },
-      { status: 'complete', title: 'dummy title' },
-    ],
-  },
-  {
-    module: 'SQL',
-    completionPercentage: '65%',
-    moduleDuration: '6 weeks',
-    assignments: [
-      { status: 'complete', title: 'dummy title' },
-      { status: 'incomplete', title: 'dummy title' },
-      { status: 'complete', title: 'dummy title' },
-    ],
-  },
-  {
-    module: 'SpringBoot',
-    completionPercentage: '25%',
-    moduleDuration: '4 weeks',
-    assignments: [
-      { status: 'complete', title: 'dummy title' },
-      { status: 'incomplete', title: 'dummy title' },
-      { status: 'complete', title: 'dummy title' },
-    ],
-  },
-]
+type SyllabusModule = {
+  module: string
+  completionPercentage: string
+  moduleDuration: string
+  assignments: {
+    status: 'complete' | 'incomplete'
+    title: string
+  }[]
+}
 
-const SyllabusList = () => {
+const SyllabusList = ({ items }: { items: SyllabusModule[] }) => {
   const [openModule, setOpenModule] = useState<string | null>(
-    syllabusData[0]?.module ?? null,
+    items[0]?.module ?? null,
   )
 
   return (
     <div className="space-y-4">
-      {syllabusData.map((item) => {
+      {items.map((item) => {
         const isOpen = openModule === item.module
 
         return (

@@ -12,7 +12,7 @@ export type GradeModule = {
   assignments: {
     id: string
     title: string
-    weightPercent: number
+    maxScore: number
     gradePercent: number | null
     status: GradeStatus
   }[]
@@ -59,7 +59,7 @@ const GradesModuleCard = ({
           <>
             <div className="grid grid-cols-[minmax(0,2.2fr)_0.8fr_0.8fr_0.8fr] gap-4 px-0 pb-1 text-sm font-medium text-white/55">
               <div>Assignment</div>
-              <div>Weight</div>
+              <div>Max Score</div>
               <div>Grade</div>
               <div>Status</div>
             </div>
@@ -69,7 +69,7 @@ const GradesModuleCard = ({
                 <GradesAssignmentRow
                   key={assignment.id}
                   title={assignment.title}
-                  weightPercent={assignment.weightPercent}
+                  maxScore={assignment.maxScore}
                   gradePercent={assignment.gradePercent}
                   status={assignment.status}
                 />
