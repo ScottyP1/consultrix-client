@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { createFileRoute } from '@tanstack/react-router'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { LuSave } from 'react-icons/lu'
 
 import PageHeader from '#/components/PageHeader'
 import AttendanceDetailPanel from '#/components/attendance/AttendanceDetailPanel'
@@ -17,6 +19,7 @@ import type {
 import { useInstructorWorkspaceData } from '#/hooks/instructor/useInstructorWorkspaceData'
 import { formatDate, formatStatusLabel } from '#/lib/consultrix-format'
 import { deriveInstructorCohorts, getStudentName } from '#/lib/instructor-workspace'
+import { createAttendance, updateAttendance, type AttendanceRequestDto } from '#/api/consultrix'
 
 export const Route = createFileRoute('/instructor/attendance')({
   component: RouteComponent,
@@ -45,6 +48,52 @@ function RouteComponent() {
   const [localRecordOverrides, setLocalRecordOverrides] = useState<
     Record<string, AttendanceRecord>
   >({})
+  const [isSavingSession, setIsSavingSession] = useState(false)
+  const [saveSessionError, setSaveSessionError] = useState<string | null>(null)
+
+  const queryClient = useQueryClient()
+
+  const createAttendanceMutation = useMutation({
+    mutationFn: (payload: AttendanceRequestDto) => createAttendance(payload),
+  })
+
+  const updateAttendanceMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: AttendanceRequestDto }) =>
+      updateAttendance(id, payload),
+  })
+
+  async function handleSubmitSession() {
+    if (!selectedSession || !selectedCohort) return
+    const cohortId = Number(selectedCohort.id)
+    const sessionDate = selectedSession.id
+    const sessionRecords = mergedRecords.filter((r) => r.sessionId === sessionDate)
+
+    setIsSavingSession(true)
+    setSaveSessionError(null)
+    try {
+      await Promise.all(
+        sessionRecords.map((record) => {
+          const payload: AttendanceRequestDto = {
+            cohortId,
+            studentUserId: Number(record.studentId),
+            attendanceDate: sessionDate,
+            status: record.status.toUpperCase(),
+            note: record.note || undefined,
+          }
+          if (record.attendanceId != null) {
+            return updateAttendanceMutation.mutateAsync({ id: record.attendanceId, payload })
+          }
+          return createAttendanceMutation.mutateAsync(payload)
+        }),
+      )
+      queryClient.invalidateQueries({ queryKey: ['instructor', 'attendance'] })
+      setLocalRecordOverrides({})
+    } catch (err) {
+      setSaveSessionError(err instanceof Error ? err.message : 'Failed to save attendance')
+    } finally {
+      setIsSavingSession(false)
+    }
+  }
 
   const cohorts = useMemo<AttendanceCohort[]>(() => {
     const students = studentsQuery.data ?? []
@@ -95,6 +144,7 @@ function RouteComponent() {
       const records = attendance
         .filter((record) => record.cohort.id === cohort.id)
         .map((record) => ({
+          attendanceId: record.id,
           studentId: String(record.student.id),
           sessionId: record.attendanceDate,
           status: toAttendanceStatus(record.status),
@@ -373,9 +423,21 @@ function RouteComponent() {
         </GlassContainer>
       )}
 
-      <p className="text-xs text-white/35">
-        Attendance data is loaded live from the API. Edits in this view remain local until write actions are wired.
-      </p>
+      {activeView === 'take' && selectedSession && (
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleSubmitSession}
+            disabled={isSavingSession}
+            className="flex items-center gap-2 rounded-xl bg-sky-500/20 px-5 py-2.5 text-sm font-medium text-sky-300 transition-colors hover:bg-sky-500/30 disabled:opacity-50"
+          >
+            <LuSave size={14} />
+            {isSavingSession ? 'Saving…' : 'Submit Session'}
+          </button>
+          {saveSessionError && (
+            <p className="text-xs text-red-400">{saveSessionError}</p>
+          )}
+        </div>
+      )}
     </div>
   )
 }

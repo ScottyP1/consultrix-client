@@ -1,3 +1,4 @@
+import { LuTriangleAlert } from 'react-icons/lu'
 import SectionFrame from '#/components/dashboard/SectionFrame'
 import type {
   GradebookAssignment,
@@ -13,6 +14,9 @@ const GradebookDetailPanel = ({
   onStatusChange,
   onScoreChange,
   onFeedbackChange,
+  onSave,
+  isSaving,
+  saveError,
 }: {
   student?: GradebookStudent
   assignment?: GradebookAssignment
@@ -20,6 +24,9 @@ const GradebookDetailPanel = ({
   onStatusChange: (status: GradebookStatus) => void
   onScoreChange: (score: number | null) => void
   onFeedbackChange: (feedback: string) => void
+  onSave?: () => void
+  isSaving?: boolean
+  saveError?: Error | null
 }) => {
   if (!student || !assignment || !record) {
     return (
@@ -30,6 +37,8 @@ const GradebookDetailPanel = ({
       </SectionFrame>
     )
   }
+
+  const canSave = onSave && record.submissionId != null && record.score != null
 
   return (
     <SectionFrame label="Grade Detail" className="min-h-[28rem]">
@@ -55,18 +64,10 @@ const GradebookDetailPanel = ({
             onChange={(event) => onStatusChange(event.target.value as GradebookStatus)}
             className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none"
           >
-            <option value="graded" className="bg-slate-950">
-              Graded
-            </option>
-            <option value="submitted" className="bg-slate-950">
-              Submitted
-            </option>
-            <option value="missing" className="bg-slate-950">
-              Missing
-            </option>
-            <option value="excused" className="bg-slate-950">
-              Excused
-            </option>
+            <option value="graded" className="bg-slate-950">Graded</option>
+            <option value="submitted" className="bg-slate-950">Submitted</option>
+            <option value="missing" className="bg-slate-950">Missing</option>
+            <option value="excused" className="bg-slate-950">Excused</option>
           </select>
         </label>
 
@@ -96,15 +97,32 @@ const GradebookDetailPanel = ({
           <textarea
             value={record.feedback ?? ''}
             onChange={(event) => onFeedbackChange(event.target.value)}
-            rows={6}
+            rows={5}
             className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none"
             placeholder="Leave rubric notes or revision guidance."
           />
         </label>
 
-        <p className="text-xs text-white/35">
-          Changes apply locally right away. When the API layer is added, this panel can save directly to the selected record.
-        </p>
+        {onSave && (
+          <div className="space-y-2">
+            <button
+              onClick={onSave}
+              disabled={!canSave || isSaving}
+              className="w-full rounded-xl bg-sky-500/20 px-4 py-2.5 text-sm font-medium text-sky-300 transition-colors hover:bg-sky-500/30 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isSaving ? 'Saving…' : record.gradeId ? 'Update Grade' : 'Save Grade'}
+            </button>
+            {!record.submissionId && (
+              <p className="text-xs text-white/35">No submission on record — cannot grade.</p>
+            )}
+            {saveError && (
+              <p className="flex items-center gap-1.5 text-xs text-red-400">
+                <LuTriangleAlert size={12} />
+                {saveError.message}
+              </p>
+            )}
+          </div>
+        )}
       </div>
     </SectionFrame>
   )

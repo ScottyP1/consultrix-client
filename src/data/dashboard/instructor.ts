@@ -163,6 +163,7 @@ export const instructorQuickActions: DashboardQuickActionItem[] = [
     title: 'Open Gradebook',
     bgColor: '#341E4C',
     iconAccent: '#AC84D3',
+    to: '/instructor/gradebook',
   },
   {
     icon: LuCalendar,

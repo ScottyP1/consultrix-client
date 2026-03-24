@@ -12,7 +12,16 @@ export function getContext() {
     return context
   }
 
-  const queryClient = new QueryClient()
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 1000 * 60 * 5, // 5 minutes — no refetch on route change within this window
+        gcTime: 1000 * 60 * 10,   // keep unused cache for 10 minutes
+        retry: 1,
+        refetchOnWindowFocus: false,
+      },
+    },
+  })
 
   context = {
     queryClient,

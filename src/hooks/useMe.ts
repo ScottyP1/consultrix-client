@@ -7,5 +7,6 @@ export function useMe(enabled = true) {
     queryKey: ['auth', 'me'],
     queryFn: getMe,
     enabled,
+    staleTime: Infinity,
   })
 }

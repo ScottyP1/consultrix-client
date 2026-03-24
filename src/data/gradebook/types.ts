@@ -24,6 +24,8 @@ export type GradebookAssignment = {
 export type GradebookRecord = {
   studentId: string
   assignmentId: string
+  submissionId?: number
+  gradeId?: number
   score: number | null
   status: GradebookStatus
   feedback?: string

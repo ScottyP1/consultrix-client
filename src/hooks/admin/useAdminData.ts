@@ -12,6 +12,9 @@ import {
   getAdminStats,
 } from '@/api/consultrix'
 
+const REF = 1000 * 60 * 30  // 30 min — reference data
+const LIVE = 1000 * 60 * 5   // 5 min  — operational data
+
 export function useAdminData() {
   const [
     meQuery,
@@ -25,15 +28,15 @@ export function useAdminData() {
     statsQuery,
   ] = useQueries({
     queries: [
-      { queryKey: ['auth', 'me'], queryFn: getMe },
-      { queryKey: ['admin', 'facilities'], queryFn: getFacilities },
-      { queryKey: ['admin', 'cohorts'], queryFn: getCohorts },
-      { queryKey: ['admin', 'students'], queryFn: getStudents },
-      { queryKey: ['admin', 'instructors'], queryFn: getInstructors },
-      { queryKey: ['admin', 'modules'], queryFn: getModules },
-      { queryKey: ['admin', 'assignments'], queryFn: getAssignmentsForInstructor },
-      { queryKey: ['admin', 'submissions'], queryFn: getAllSubmissions },
-      { queryKey: ['admin', 'stats'], queryFn: getAdminStats },
+      { queryKey: ['auth', 'me'], queryFn: getMe, staleTime: Infinity },
+      { queryKey: ['admin', 'facilities'], queryFn: getFacilities, staleTime: REF },
+      { queryKey: ['admin', 'cohorts'], queryFn: getCohorts, staleTime: REF },
+      { queryKey: ['admin', 'students'], queryFn: getStudents, staleTime: REF },
+      { queryKey: ['admin', 'instructors'], queryFn: getInstructors, staleTime: REF },
+      { queryKey: ['admin', 'modules'], queryFn: getModules, staleTime: REF },
+      { queryKey: ['admin', 'assignments'], queryFn: getAssignmentsForInstructor, staleTime: REF },
+      { queryKey: ['admin', 'submissions'], queryFn: getAllSubmissions, staleTime: LIVE },
+      { queryKey: ['admin', 'stats'], queryFn: getAdminStats, staleTime: LIVE },
     ],
   })
 

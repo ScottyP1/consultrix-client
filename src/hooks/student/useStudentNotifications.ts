@@ -7,6 +7,7 @@ export function useStudentNotifications(userId?: number) {
     queryKey: ['student', 'notifications', userId],
     queryFn: () => getNotifications(userId as number),
     enabled: userId != null,
+    staleTime: 1000 * 60, // 1 min
   })
 }
 
@@ -15,5 +16,6 @@ export function useUnreadNotifications(userId?: number) {
     queryKey: ['student', 'notifications', 'unread', userId],
     queryFn: () => getUnreadNotifications(userId as number),
     enabled: userId != null,
+    staleTime: 1000 * 60, // 1 min
   })
 }

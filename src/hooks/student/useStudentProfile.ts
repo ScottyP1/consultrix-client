@@ -13,5 +13,6 @@ export function useStudentProfile({
     queryKey: ['student', 'profile'],
     queryFn: getStudentProfile,
     enabled,
+    staleTime: Infinity,
   })
 }

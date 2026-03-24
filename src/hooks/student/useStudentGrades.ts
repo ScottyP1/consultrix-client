@@ -6,5 +6,6 @@ export function useStudentGrades() {
   return useQuery({
     queryKey: ['student', 'grades'],
     queryFn: getGrades,
+    staleTime: 1000 * 60 * 5,
   })
 }
