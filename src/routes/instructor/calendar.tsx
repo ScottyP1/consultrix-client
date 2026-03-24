@@ -40,14 +40,18 @@ function RouteComponent() {
   const [form, setForm] = useState<{
     title: string
     description: string
+    startDate: string
     startTime: string
+    endDate: string
     endTime: string
     eventType: string
     cohortId: string
   }>({
     title: '',
     description: '',
+    startDate: '',
     startTime: '',
+    endDate: '',
     endTime: '',
     eventType: 'CLASS',
     cohortId: '',
@@ -83,20 +87,24 @@ function RouteComponent() {
       .slice(0, 5)
   }, [allEvents])
 
+  const emptyForm = { title: '', description: '', startDate: '', startTime: '', endDate: '', endTime: '', eventType: 'CLASS', cohortId: '' }
+
   function handleCreate() {
-    if (!form.title || !form.startTime) return
+    if (!form.title || !form.startDate || !form.startTime) return
+    const startIso = `${form.startDate}T${form.startTime}`
+    const endIso = form.endDate && form.endTime ? `${form.endDate}T${form.endTime}` : undefined
     const payload: CreateCalendarEventPayload = {
       title: form.title,
       description: form.description || undefined,
-      startTime: form.startTime,
-      endTime: form.endTime || undefined,
+      startTime: startIso,
+      endTime: endIso,
       eventType: form.eventType,
       cohortId: form.cohortId ? Number(form.cohortId) : undefined,
     }
     createMutation.mutate(payload, {
       onSuccess: () => {
         setShowCreate(false)
-        setForm({ title: '', description: '', startTime: '', endTime: '', eventType: 'CLASS', cohortId: '' })
+        setForm(emptyForm)
       },
     })
   }
@@ -124,77 +132,100 @@ function RouteComponent() {
             </button>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="sm:col-span-2">
-              <input
-                value={form.title}
-                onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-                placeholder="Title *"
-                className="w-full rounded-xl border border-white/10 bg-white/6 px-3 py-2.5 text-sm text-white outline-none placeholder:text-white/30"
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <textarea
-                value={form.description}
-                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                placeholder="Description"
-                rows={2}
-                className="w-full rounded-xl border border-white/10 bg-white/6 px-3 py-2.5 text-sm text-white outline-none placeholder:text-white/30 resize-none"
-              />
-            </div>
+          <div className="flex flex-col gap-3">
+            {/* Title */}
+            <input
+              value={form.title}
+              onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+              placeholder="Event title *"
+              className="w-full rounded-xl border border-white/10 bg-white/6 px-3 py-2.5 text-sm text-white outline-none placeholder:text-white/30 focus:border-indigo-400/50"
+            />
+
+            {/* Description */}
+            <textarea
+              value={form.description}
+              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+              placeholder="Description (optional)"
+              rows={2}
+              className="w-full resize-none rounded-xl border border-white/10 bg-white/6 px-3 py-2.5 text-sm text-white outline-none placeholder:text-white/30 focus:border-indigo-400/50"
+            />
+
+            {/* Start date + time */}
             <div>
-              <label className="mb-1 block text-xs text-white/50">Start Time *</label>
-              <input
-                type="datetime-local"
-                value={form.startTime}
-                onChange={(e) => setForm((f) => ({ ...f, startTime: e.target.value }))}
-                className="w-full rounded-xl border border-white/10 bg-white/6 px-3 py-2.5 text-sm text-white outline-none"
-              />
+              <p className="mb-1.5 text-xs font-medium text-white/50">Start <span className="text-rose-400/70">*</span></p>
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="date"
+                  value={form.startDate}
+                  onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))}
+                  className="w-full rounded-xl border border-white/10 bg-white/6 px-3 py-2.5 text-sm text-white outline-none focus:border-indigo-400/50 scheme-dark"
+                />
+                <input
+                  type="time"
+                  value={form.startTime}
+                  onChange={(e) => setForm((f) => ({ ...f, startTime: e.target.value }))}
+                  className="w-full rounded-xl border border-white/10 bg-white/6 px-3 py-2.5 text-sm text-white outline-none focus:border-indigo-400/50 scheme-dark"
+                />
+              </div>
             </div>
+
+            {/* End date + time */}
             <div>
-              <label className="mb-1 block text-xs text-white/50">End Time</label>
-              <input
-                type="datetime-local"
-                value={form.endTime}
-                onChange={(e) => setForm((f) => ({ ...f, endTime: e.target.value }))}
-                className="w-full rounded-xl border border-white/10 bg-white/6 px-3 py-2.5 text-sm text-white outline-none"
-              />
+              <p className="mb-1.5 text-xs font-medium text-white/50">End <span className="text-white/25">(optional)</span></p>
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="date"
+                  value={form.endDate}
+                  onChange={(e) => setForm((f) => ({ ...f, endDate: e.target.value }))}
+                  className="w-full rounded-xl border border-white/10 bg-white/6 px-3 py-2.5 text-sm text-white outline-none focus:border-indigo-400/50 scheme-dark"
+                />
+                <input
+                  type="time"
+                  value={form.endTime}
+                  onChange={(e) => setForm((f) => ({ ...f, endTime: e.target.value }))}
+                  className="w-full rounded-xl border border-white/10 bg-white/6 px-3 py-2.5 text-sm text-white outline-none focus:border-indigo-400/50 scheme-dark"
+                />
+              </div>
             </div>
-            <div>
-              <label className="mb-1 block text-xs text-white/50">Type</label>
-              <select
-                value={form.eventType}
-                onChange={(e) => setForm((f) => ({ ...f, eventType: e.target.value }))}
-                className="w-full rounded-xl border border-white/10 bg-[#1a1a2e] px-3 py-2.5 text-sm text-white outline-none"
-              >
-                <option value="CLASS">Class</option>
-                <option value="EXAM">Exam</option>
-                <option value="STUDY_GROUP">Study Group</option>
-                <option value="ANNOUNCEMENT">Announcement</option>
-                <option value="OTHER">Other</option>
-              </select>
-            </div>
-            <div>
-              <label className="mb-1 block text-xs text-white/50">Cohort (leave blank for all)</label>
-              <select
-                value={form.cohortId}
-                onChange={(e) => setForm((f) => ({ ...f, cohortId: e.target.value }))}
-                className="w-full rounded-xl border border-white/10 bg-[#1a1a2e] px-3 py-2.5 text-sm text-white outline-none"
-              >
-                <option value="">All cohorts</option>
-                {(cohortsQuery?.data ?? []).map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
+
+            {/* Type + Cohort */}
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <p className="mb-1.5 text-xs font-medium text-white/50">Type</p>
+                <select
+                  value={form.eventType}
+                  onChange={(e) => setForm((f) => ({ ...f, eventType: e.target.value }))}
+                  className="w-full rounded-xl border border-white/10 bg-[#1a1a2e] px-3 py-2.5 text-sm text-white outline-none focus:border-indigo-400/50"
+                >
+                  <option value="CLASS">Class</option>
+                  <option value="EXAM">Exam</option>
+                  <option value="STUDY_GROUP">Study Group</option>
+                  <option value="ANNOUNCEMENT">Announcement</option>
+                  <option value="OTHER">Other</option>
+                </select>
+              </div>
+              <div>
+                <p className="mb-1.5 text-xs font-medium text-white/50">Cohort</p>
+                <select
+                  value={form.cohortId}
+                  onChange={(e) => setForm((f) => ({ ...f, cohortId: e.target.value }))}
+                  className="w-full rounded-xl border border-white/10 bg-[#1a1a2e] px-3 py-2.5 text-sm text-white outline-none focus:border-indigo-400/50"
+                >
+                  <option value="">All cohorts</option>
+                  {(cohortsQuery?.data ?? []).map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 
           <div className="mt-4 flex items-center gap-3">
             <button
               type="button"
-              disabled={!form.title || !form.startTime || createMutation.isPending}
+              disabled={!form.title || !form.startDate || !form.startTime || createMutation.isPending}
               onClick={handleCreate}
               className="rounded-xl bg-indigo-500 px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
             >

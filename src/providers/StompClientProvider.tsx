@@ -12,7 +12,7 @@ import SockJS from 'sockjs-client'
 
 import { getToken } from '@/lib/auth-token'
 
-const WS_URL = `${import.meta.env.VITE_API_URL ?? 'http://localhost:8080'}/ws`
+const WS_URL = `${(import.meta.env.VITE_API_URL ?? 'http://localhost:8080').replace(/\/$/, '')}/ws`
 
 type StompContextValue = {
   connected: boolean
