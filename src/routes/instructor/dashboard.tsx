@@ -122,7 +122,7 @@ function RouteComponent() {
   ]
 
   const actionItems = ungradedSubmissions.slice(0, 5).map((submission) => ({
-    assignmentId: submission.assignment.id,
+    to: '/instructor/gradebook',
     title: submission.assignment.title,
     subTitle: `${getStudentName(submission.student)} · ${submission.assignment.module.title}`,
     btnLabel: 'Review',

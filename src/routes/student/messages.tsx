@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
 import { LuSearch, LuSendHorizontal, LuPlus, LuTrash2, LuUsers } from 'react-icons/lu'
 
 import GlassContainer from '#/components/liquidGlass/GlassContainer'
 import PageHeader from '#/components/PageHeader'
 import { useStudentProfile } from '#/hooks/student/useStudentProfile'
+import { useStudentContacts } from '#/hooks/student/useStudentContacts'
 import { useConversations } from '#/hooks/useConversations'
-import { getInstructors } from '@/api/consultrix'
 
 export const Route = createFileRoute('/student/messages')({
   component: RouteComponent,
@@ -35,12 +34,8 @@ function RouteComponent() {
     connected,
   } = useConversations({ enabled: !!myId, selectedId })
 
-  const instructorsQuery = useQuery({
-    queryKey: ['instructor-list'],
-    queryFn: getInstructors,
-    enabled: showNewDm || showNewGroup,
-    staleTime: 1000 * 60 * 30,
-  })
+  const cohortId = profileQuery.data?.cohortId ?? undefined
+  const contactsQuery = useStudentContacts(cohortId)
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
@@ -117,23 +112,23 @@ function RouteComponent() {
       {/* New DM modal */}
       {showNewDm && (
         <GlassContainer className="rounded-[18px] p-5">
-          <h3 className="mb-4 text-base font-semibold text-white">Message Instructor</h3>
+          <h3 className="mb-4 text-base font-semibold text-white">New Message</h3>
           <div className="flex flex-col gap-2">
-            {(instructorsQuery.data ?? []).map((instructor) => (
+            {(contactsQuery.data ?? []).map((student) => (
               <button
-                key={instructor.id}
+                key={student.id}
                 type="button"
                 onClick={() => createConversationMutation.mutate(
-                  { type: 'DIRECT', memberIds: [instructor.id] },
+                  { type: 'DIRECT', memberIds: [student.id] },
                   { onSuccess: (conv) => { setSelectedId(conv.id); setShowNewDm(false) } },
                 )}
                 className="flex items-center gap-3 rounded-xl p-3 text-left hover:bg-white/8"
               >
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-violet-500 text-xs font-semibold text-white">
-                  {instructor.firstName[0]}{instructor.lastName[0]}
+                  {student.firstName[0]}{student.lastName[0]}
                 </div>
                 <span className="text-sm text-white">
-                  {instructor.firstName} {instructor.lastName}
+                  {student.firstName} {student.lastName}
                 </span>
               </button>
             ))}
@@ -160,22 +155,22 @@ function RouteComponent() {
           />
           <p className="mb-2 text-xs text-white/50">Select members:</p>
           <div className="flex flex-col gap-1.5 max-h-48 overflow-y-auto">
-            {(instructorsQuery.data ?? []).map((instructor) => {
-              const checked = selectedMemberIds.includes(instructor.id)
+            {(contactsQuery.data ?? []).map((student) => {
+              const checked = selectedMemberIds.includes(student.id)
               return (
-                <label key={instructor.id} className="flex items-center gap-3 rounded-xl p-2 hover:bg-white/6 cursor-pointer">
+                <label key={student.id} className="flex items-center gap-3 rounded-xl p-2 hover:bg-white/6 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={checked}
                     onChange={() =>
                       setSelectedMemberIds((prev) =>
-                        checked ? prev.filter((id) => id !== instructor.id) : [...prev, instructor.id],
+                        checked ? prev.filter((id) => id !== student.id) : [...prev, student.id],
                       )
                     }
                     className="accent-indigo-500"
                   />
                   <span className="text-sm text-white">
-                    {instructor.firstName} {instructor.lastName}
+                    {student.firstName} {student.lastName}
                   </span>
                 </label>
               )

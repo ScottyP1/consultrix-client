@@ -6,6 +6,7 @@ type ActionItemProps = DashboardActionItemData
 
 const ActionItem = ({
   assignmentId,
+  to,
   icon: Icon,
   title,
   subTitle,
@@ -14,6 +15,8 @@ const ActionItem = ({
   iconBg,
   isLate,
 }: ActionItemProps) => {
+  const linkTo = to ?? (assignmentId != null ? `/student/assignment/${assignmentId}` : null)
+
   return (
     <ItemContainer className="flex items-center justify-between gap-4">
       <div className="flex min-w-0 items-center gap-4">
@@ -37,10 +40,9 @@ const ActionItem = ({
         </div>
       </div>
 
-      {assignmentId != null ? (
+      {linkTo != null ? (
         <Link
-          to="/student/assignment/$assignmentId"
-          params={{ assignmentId: String(assignmentId) }}
+          to={linkTo as never}
           className="shrink-0 rounded-lg bg-white/8 px-3 py-1.5 text-sm text-white/70 transition-colors hover:bg-white/15 hover:text-white"
         >
           {btnLabel}

@@ -62,7 +62,7 @@ const GradebookTable = ({
           <tr>
             <th
               rowSpan={2}
-              className="sticky left-0 z-30 min-w-64 border-b border-white/10 px-4 py-4 text-left text-[11px] uppercase tracking-[0.24em] text-white/45"
+              className="sticky left-0 z-30 min-w-64 border-b border-white/10 bg-[#0d0d1a] px-4 py-4 text-left text-[11px] uppercase tracking-[0.24em] text-white/45"
             >
               Student
             </th>
@@ -108,7 +108,7 @@ const GradebookTable = ({
         <tbody>
           {students.map((student) => (
             <tr key={student.id}>
-              <td className="sticky left-0 z-20 border-b border-white/6  px-4 py-4">
+              <td className="sticky left-0 z-20 border-b border-white/6 bg-[#0d0d1a] px-4 py-4">
                 <div className="space-y-1">
                   <Link
                     to="/instructor/student/$studentId"
