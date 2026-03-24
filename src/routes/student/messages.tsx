@@ -29,6 +29,7 @@ function RouteComponent() {
     conversationsQuery,
     messagesQuery,
     createConversationMutation,
+    deleteConversationMutation,
     deleteMessageMutation,
     publish,
     connected,
@@ -114,7 +115,13 @@ function RouteComponent() {
         <GlassContainer className="rounded-[18px] p-5">
           <h3 className="mb-4 text-base font-semibold text-white">New Message</h3>
           <div className="flex flex-col gap-2">
-            {(contactsQuery.data ?? []).map((student) => (
+            {contactsQuery.isLoading && (
+              <p className="text-sm text-white/40">Loading cohort members…</p>
+            )}
+            {!contactsQuery.isLoading && !cohortId && (
+              <p className="text-sm text-white/40">You are not assigned to a cohort yet.</p>
+            )}
+            {(contactsQuery.data ?? []).filter((s) => s.id !== myId).map((student) => (
               <button
                 key={student.id}
                 type="button"
@@ -155,7 +162,7 @@ function RouteComponent() {
           />
           <p className="mb-2 text-xs text-white/50">Select members:</p>
           <div className="flex flex-col gap-1.5 max-h-48 overflow-y-auto">
-            {(contactsQuery.data ?? []).map((student) => {
+            {(contactsQuery.data ?? []).filter((s) => s.id !== myId).map((student) => {
               const checked = selectedMemberIds.includes(student.id)
               return (
                 <label key={student.id} className="flex items-center gap-3 rounded-xl p-2 hover:bg-white/6 cursor-pointer">
@@ -221,26 +228,41 @@ function RouteComponent() {
               conversations.map((conv) => {
                 const isSelected = conv.id === selectedId
                 return (
-                  <button
+                  <div
                     key={conv.id}
-                    type="button"
-                    onClick={() => setSelectedId(conv.id)}
-                    className={`flex w-full items-start gap-3 px-4 py-4 text-left transition ${isSelected ? 'bg-indigo-500/18' : 'hover:bg-white/5'}`}
+                    className={`group flex items-center gap-1 transition ${isSelected ? 'bg-indigo-500/18' : 'hover:bg-white/5'}`}
                   >
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-fuchsia-500 to-indigo-500 text-xs font-semibold text-white">
-                      {conv.type === 'GROUP' ? <LuUsers size={14} /> : getInitials(conv.name ?? '')}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-white">
-                        {conv.name ?? 'Direct Message'}
-                      </p>
-                      {conv.lastMessage && (
-                        <p className="mt-0.5 truncate text-xs text-white/40">
-                          {conv.lastMessage.deleted ? '[deleted]' : conv.lastMessage.content}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedId(conv.id)}
+                      className="flex min-w-0 flex-1 items-start gap-3 px-4 py-4 text-left"
+                    >
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-fuchsia-500 to-indigo-500 text-xs font-semibold text-white">
+                        {conv.type === 'GROUP' ? <LuUsers size={14} /> : getInitials(conv.name ?? '')}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold text-white">
+                          {conv.name ?? 'Direct Message'}
                         </p>
-                      )}
-                    </div>
-                  </button>
+                        {conv.lastMessage && (
+                          <p className="mt-0.5 truncate text-xs text-white/40">
+                            {conv.lastMessage.deleted ? '[deleted]' : conv.lastMessage.content}
+                          </p>
+                        )}
+                      </div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        deleteConversationMutation.mutate(conv.id, {
+                          onSuccess: () => { if (selectedId === conv.id) setSelectedId(null) },
+                        })
+                      }}
+                      className="invisible mr-2 shrink-0 text-white/25 hover:text-rose-400 group-hover:visible"
+                    >
+                      <LuTrash2 size={13} />
+                    </button>
+                  </div>
                 )
               })
             )}

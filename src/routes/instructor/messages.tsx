@@ -27,6 +27,7 @@ function RouteComponent() {
     conversationsQuery,
     messagesQuery,
     createConversationMutation,
+    deleteConversationMutation,
     deleteMessageMutation,
     publish,
     connected,
@@ -161,26 +162,41 @@ function RouteComponent() {
               conversations.map((conv) => {
                 const isSelected = conv.id === selectedId
                 return (
-                  <button
+                  <div
                     key={conv.id}
-                    type="button"
-                    onClick={() => setSelectedId(conv.id)}
-                    className={`flex w-full items-start gap-3 px-4 py-4 text-left transition ${isSelected ? 'bg-indigo-500/18' : 'hover:bg-white/5'}`}
+                    className={`group flex items-center gap-1 transition ${isSelected ? 'bg-indigo-500/18' : 'hover:bg-white/5'}`}
                   >
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-fuchsia-500 to-indigo-500 text-xs font-semibold text-white">
-                      {conv.type === 'GROUP' ? <LuUsers size={14} /> : getInitials(conv.name ?? '')}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-white">
-                        {conv.name ?? 'Direct Message'}
-                      </p>
-                      {conv.lastMessage && (
-                        <p className="mt-0.5 truncate text-xs text-white/40">
-                          {conv.lastMessage.deleted ? '[deleted]' : conv.lastMessage.content}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedId(conv.id)}
+                      className="flex min-w-0 flex-1 items-start gap-3 px-4 py-4 text-left"
+                    >
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-fuchsia-500 to-indigo-500 text-xs font-semibold text-white">
+                        {conv.type === 'GROUP' ? <LuUsers size={14} /> : getInitials(conv.name ?? '')}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold text-white">
+                          {conv.name ?? 'Direct Message'}
                         </p>
-                      )}
-                    </div>
-                  </button>
+                        {conv.lastMessage && (
+                          <p className="mt-0.5 truncate text-xs text-white/40">
+                            {conv.lastMessage.deleted ? '[deleted]' : conv.lastMessage.content}
+                          </p>
+                        )}
+                      </div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        deleteConversationMutation.mutate(conv.id, {
+                          onSuccess: () => { if (selectedId === conv.id) setSelectedId(null) },
+                        })
+                      }}
+                      className="invisible mr-2 shrink-0 text-white/25 hover:text-rose-400 group-hover:visible"
+                    >
+                      <LuTrash2 size={13} />
+                    </button>
+                  </div>
                 )
               })
             )}
