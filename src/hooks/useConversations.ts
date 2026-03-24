@@ -5,6 +5,7 @@ import {
   getConversations,
   getConversationMessages,
   createConversation,
+  deleteConversation,
   deleteMessage,
   type MessageDto,
   type CreateConversationPayload,
@@ -58,6 +59,11 @@ export function useConversations(options: { enabled?: boolean; selectedId?: numb
     onSuccess: () => qc.invalidateQueries({ queryKey: ['conversations'] }),
   })
 
+  const deleteConversationMutation = useMutation({
+    mutationFn: (conversationId: number) => deleteConversation(conversationId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['conversations'] }),
+  })
+
   const deleteMessageMutation = useMutation({
     mutationFn: (messageId: number) => deleteMessage(messageId),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['messages', selectedId] }),
@@ -67,6 +73,7 @@ export function useConversations(options: { enabled?: boolean; selectedId?: numb
     conversationsQuery,
     messagesQuery,
     createConversationMutation,
+    deleteConversationMutation,
     deleteMessageMutation,
     publish,
     connected,

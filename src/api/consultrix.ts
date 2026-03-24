@@ -604,6 +604,10 @@ export function getConversationMessages(conversationId: number) {
   return request<MessageDto[]>(`/conversations/${conversationId}/messages`)
 }
 
+export function deleteConversation(conversationId: number) {
+  return request<void>(`/conversations/${conversationId}`, { method: 'DELETE' })
+}
+
 export function deleteMessage(messageId: number) {
   return request<void>(`/conversations/messages/${messageId}`, { method: 'DELETE' })
 }
