@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { createFileRoute } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { LuFlag, LuCheckCircle } from 'react-icons/lu'
+import { LuFlag, LuCircleCheck } from 'react-icons/lu'
 
 import PageHeader from '#/components/PageHeader'
 import SectionFrame from '#/components/dashboard/SectionFrame'
@@ -15,9 +15,21 @@ import type {
   GradebookStatus,
 } from '#/data/gradebook/types'
 import { useInstructorWorkspaceData } from '#/hooks/instructor/useInstructorWorkspaceData'
-import { formatAssignmentDueDate, toNumber, formatDate } from '#/lib/consultrix-format'
-import { deriveInstructorCohorts, getStudentName } from '#/lib/instructor-workspace'
-import { createFlag, getMyFlags, resolveFlag, type StudentFlagRequestDto } from '#/api/consultrix'
+import {
+  formatAssignmentDueDate,
+  toNumber,
+  formatDate,
+} from '#/lib/consultrix-format'
+import {
+  deriveInstructorCohorts,
+  getStudentName,
+} from '#/lib/instructor-workspace'
+import {
+  createFlag,
+  getMyFlags,
+  resolveFlag,
+  type StudentFlagRequestDto,
+} from '#/api/consultrix'
 
 export const Route = createFileRoute('/instructor/gradebook')({
   component: RouteComponent,
@@ -37,21 +49,30 @@ function RouteComponent() {
   const queryClient = useQueryClient()
   const [selectedCohortId, setSelectedCohortId] = useState('')
   const [selectedModuleId, setSelectedModuleId] = useState('all')
-  const [statusFilter, setStatusFilter] = useState<'all' | GradebookStatus>('all')
+  const [statusFilter, setStatusFilter] = useState<'all' | GradebookStatus>(
+    'all',
+  )
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCell, setSelectedCell] = useState<{
     studentId: string
     assignmentId: string
   } | null>(null)
-  const [localRecordOverrides, setLocalRecordOverrides] = useState<Record<string, GradebookRecord>>({})
+  const [localRecordOverrides, setLocalRecordOverrides] = useState<
+    Record<string, GradebookRecord>
+  >({})
 
   // Flag state
   const [flagStudentId, setFlagStudentId] = useState<number | null>(null)
   const [flagStudentName, setFlagStudentName] = useState('')
   const [flagReason, setFlagReason] = useState('')
-  const [flagPriority, setFlagPriority] = useState<'LOW' | 'MEDIUM' | 'HIGH'>('MEDIUM')
+  const [flagPriority, setFlagPriority] = useState<'LOW' | 'MEDIUM' | 'HIGH'>(
+    'MEDIUM',
+  )
 
-  const myFlagsQuery = useQuery({ queryKey: ['instructor', 'my-flags'], queryFn: getMyFlags })
+  const myFlagsQuery = useQuery({
+    queryKey: ['instructor', 'my-flags'],
+    queryFn: getMyFlags,
+  })
 
   const createFlagMutation = useMutation({
     mutationFn: (payload: StudentFlagRequestDto) => createFlag(payload),
@@ -65,7 +86,8 @@ function RouteComponent() {
 
   const resolveFlagMutation = useMutation({
     mutationFn: (id: number) => resolveFlag(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['instructor', 'my-flags'] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ['instructor', 'my-flags'] }),
   })
 
   const cohorts = useMemo<GradebookCohort[]>(() => {
@@ -104,13 +126,20 @@ function RouteComponent() {
           moduleId: String(assignment.module.id),
           title: assignment.title,
           pointsPossible: toNumber(assignment.maxScore),
-          dueDate: formatAssignmentDueDate(assignment.dueDate, assignment.dueTime),
+          dueDate: formatAssignmentDueDate(
+            assignment.dueDate,
+            assignment.dueTime,
+          ),
           order: index,
         }))
       const cohortRecords = submissions
-        .filter((submission) => submission.assignment.module.cohort?.id === cohort.id)
+        .filter(
+          (submission) => submission.assignment.module.cohort?.id === cohort.id,
+        )
         .map((submission) => {
-          const grade = grades.find((item) => item.submission.id === submission.id)
+          const grade = grades.find(
+            (item) => item.submission.id === submission.id,
+          )
 
           return {
             studentId: String(submission.student.id),
@@ -222,7 +251,9 @@ function RouteComponent() {
   })
 
   const selectedStudent = selectedCell
-    ? selectedCohort.students.find((student) => student.id === selectedCell.studentId)
+    ? selectedCohort.students.find(
+        (student) => student.id === selectedCell.studentId,
+      )
     : undefined
   const selectedAssignment = selectedCell
     ? selectedCohort.assignments.find(
@@ -249,8 +280,7 @@ function RouteComponent() {
     updater: (record: GradebookRecord) => GradebookRecord,
   ) => {
     setLocalRecordOverrides((current) => {
-      const currentRecord =
-        current[`${studentId}:${assignmentId}`] ??
+      const currentRecord = current[`${studentId}:${assignmentId}`] ??
         mergedRecords.find(
           (record) =>
             record.studentId === studentId &&
@@ -371,7 +401,9 @@ function RouteComponent() {
       {flagStudentId !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0f1117] p-6 shadow-2xl space-y-4">
-            <p className="text-sm font-semibold text-white">Flag Student: {flagStudentName}</p>
+            <p className="text-sm font-semibold text-white">
+              Flag Student: {flagStudentName}
+            </p>
             <textarea
               rows={4}
               placeholder="Describe the concern or issue requiring attention…"
@@ -382,7 +414,9 @@ function RouteComponent() {
             <div className="flex items-center gap-3">
               <select
                 value={flagPriority}
-                onChange={(e) => setFlagPriority(e.target.value as 'LOW' | 'MEDIUM' | 'HIGH')}
+                onChange={(e) =>
+                  setFlagPriority(e.target.value as 'LOW' | 'MEDIUM' | 'HIGH')
+                }
                 className="rounded-lg bg-white/8 px-3 py-2 text-sm text-white outline-none"
               >
                 <option value="LOW">Low Priority</option>
@@ -390,13 +424,22 @@ function RouteComponent() {
                 <option value="HIGH">High Priority</option>
               </select>
               <button
-                onClick={() => createFlagMutation.mutate({ studentId: flagStudentId, reason: flagReason, priority: flagPriority })}
+                onClick={() =>
+                  createFlagMutation.mutate({
+                    studentId: flagStudentId,
+                    reason: flagReason,
+                    priority: flagPriority,
+                  })
+                }
                 disabled={!flagReason.trim() || createFlagMutation.isPending}
                 className="rounded-lg bg-red-500/20 px-4 py-2 text-sm text-red-300 hover:bg-red-500/30 transition-colors disabled:opacity-40"
               >
                 {createFlagMutation.isPending ? 'Flagging…' : 'Submit Flag'}
               </button>
-              <button onClick={() => setFlagStudentId(null)} className="ml-auto text-xs text-white/40 hover:text-white/70 transition-colors">
+              <button
+                onClick={() => setFlagStudentId(null)}
+                className="ml-auto text-xs text-white/40 hover:text-white/70 transition-colors"
+              >
                 Cancel
               </button>
             </div>
@@ -414,21 +457,37 @@ function RouteComponent() {
                 className={`flex items-start justify-between gap-4 rounded-xl px-4 py-3 border ${flag.resolved ? 'opacity-50 border-white/8' : flag.priority === 'HIGH' ? 'border-red-500/20 bg-red-500/8' : flag.priority === 'MEDIUM' ? 'border-amber-500/20 bg-amber-500/8' : 'border-white/8 bg-white/4'}`}
               >
                 <div className="flex items-start gap-3 min-w-0">
-                  <LuFlag size={13} className={`mt-0.5 shrink-0 ${flag.resolved ? 'text-white/30' : flag.priority === 'HIGH' ? 'text-red-400' : flag.priority === 'MEDIUM' ? 'text-amber-400' : 'text-white/50'}`} />
+                  <LuFlag
+                    size={13}
+                    className={`mt-0.5 shrink-0 ${flag.resolved ? 'text-white/30' : flag.priority === 'HIGH' ? 'text-red-400' : flag.priority === 'MEDIUM' ? 'text-amber-400' : 'text-white/50'}`}
+                  />
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-white">{flag.studentFirstName} {flag.studentLastName}</p>
-                    <p className="text-xs text-white/55 mt-0.5">{flag.reason}</p>
-                    <p className="text-xs text-white/30 mt-0.5">{formatDate(flag.createdAt)}</p>
+                    <p className="text-sm font-medium text-white">
+                      {flag.studentFirstName} {flag.studentLastName}
+                    </p>
+                    <p className="text-xs text-white/55 mt-0.5">
+                      {flag.reason}
+                    </p>
+                    <p className="text-xs text-white/30 mt-0.5">
+                      {formatDate(flag.createdAt)}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  <span className={`rounded-full px-2 py-0.5 text-xs ${flag.priority === 'HIGH' ? 'bg-red-500/15 text-red-300' : flag.priority === 'MEDIUM' ? 'bg-amber-500/15 text-amber-300' : 'bg-white/8 text-white/50'}`}>
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-xs ${flag.priority === 'HIGH' ? 'bg-red-500/15 text-red-300' : flag.priority === 'MEDIUM' ? 'bg-amber-500/15 text-amber-300' : 'bg-white/8 text-white/50'}`}
+                  >
                     {flag.priority}
                   </span>
                   {flag.resolved ? (
-                    <span className="flex items-center gap-1 text-xs text-emerald-400"><LuCheckCircle size={12} /> Resolved</span>
+                    <span className="flex items-center gap-1 text-xs text-emerald-400">
+                      <LuCircleCheck size={12} /> Resolved
+                    </span>
                   ) : (
-                    <button onClick={() => resolveFlagMutation.mutate(flag.id)} className="rounded-lg bg-white/8 px-2.5 py-1 text-xs text-white/60 hover:bg-white/15 transition-colors">
+                    <button
+                      onClick={() => resolveFlagMutation.mutate(flag.id)}
+                      className="rounded-lg bg-white/8 px-2.5 py-1 text-xs text-white/60 hover:bg-white/15 transition-colors"
+                    >
                       Resolve
                     </button>
                   )}
@@ -437,7 +496,10 @@ function RouteComponent() {
             ))}
           </div>
         ) : (
-          <p className="py-3 text-sm text-white/35">No flags created yet. Select a student in the gradebook, then use "Flag Student" to create one.</p>
+          <p className="py-3 text-sm text-white/35">
+            No flags created yet. Select a student in the gradebook, then use
+            "Flag Student" to create one.
+          </p>
         )}
 
         {/* Quick flag from current selection */}
@@ -458,7 +520,8 @@ function RouteComponent() {
       </SectionFrame>
 
       <p className="text-xs text-white/35">
-        Grade data is loaded live from submissions and grades. Edits in this view remain local until write actions are wired.
+        Grade data is loaded live from submissions and grades. Edits in this
+        view remain local until write actions are wired.
       </p>
     </div>
   )
@@ -469,7 +532,10 @@ function mergeGradebookRecords(
   overrides: Record<string, GradebookRecord>,
 ) {
   const merged = new Map(
-    records.map((record) => [`${record.studentId}:${record.assignmentId}`, record]),
+    records.map((record) => [
+      `${record.studentId}:${record.assignmentId}`,
+      record,
+    ]),
   )
 
   Object.entries(overrides).forEach(([key, record]) => {
