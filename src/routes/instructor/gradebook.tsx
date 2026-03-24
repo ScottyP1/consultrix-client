@@ -26,8 +26,11 @@ import {
 } from '#/lib/instructor-workspace'
 import {
   createFlag,
+  createGrade,
   getMyFlags,
   resolveFlag,
+  updateGrade,
+  type GradeRequestDto,
   type StudentFlagRequestDto,
 } from '#/api/consultrix'
 
@@ -37,6 +40,7 @@ export const Route = createFileRoute('/instructor/gradebook')({
 
 function RouteComponent() {
   const {
+    meQuery,
     studentsQuery,
     modulesQuery,
     assignmentsQuery,
@@ -88,6 +92,22 @@ function RouteComponent() {
     mutationFn: (id: number) => resolveFlag(id),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ['instructor', 'my-flags'] }),
+  })
+
+  const invalidateGrades = () => {
+    queryClient.invalidateQueries({ queryKey: ['instructor', 'grades'] })
+    queryClient.invalidateQueries({ queryKey: ['instructor', 'submissions'] })
+  }
+
+  const createGradeMutation = useMutation({
+    mutationFn: (payload: GradeRequestDto) => createGrade(payload),
+    onSuccess: invalidateGrades,
+  })
+
+  const updateGradeMutation = useMutation({
+    mutationFn: ({ gradeId, payload }: { gradeId: number; payload: GradeRequestDto }) =>
+      updateGrade(gradeId, payload),
+    onSuccess: invalidateGrades,
   })
 
   const cohorts = useMemo<GradebookCohort[]>(() => {
@@ -144,6 +164,8 @@ function RouteComponent() {
           return {
             studentId: String(submission.student.id),
             assignmentId: String(submission.assignment.id),
+            submissionId: submission.id,
+            gradeId: grade?.id,
             score: grade ? toNumber(grade.score) : null,
             status: grade ? 'graded' : 'submitted',
             feedback: grade?.feedback ?? '',
@@ -350,6 +372,24 @@ function RouteComponent() {
           student={selectedStudent}
           assignment={selectedAssignment}
           record={selectedRecord}
+          onSave={() => {
+            const record = selectedRecord
+            const instructorUserId = meQuery.data?.id
+            if (!record?.submissionId || record.score == null || !instructorUserId) return
+            const payload: GradeRequestDto = {
+              submissionId: record.submissionId,
+              instructorUserId,
+              score: record.score,
+              feedback: record.feedback || undefined,
+            }
+            if (record.gradeId != null) {
+              updateGradeMutation.mutate({ gradeId: record.gradeId, payload })
+            } else {
+              createGradeMutation.mutate(payload)
+            }
+          }}
+          isSaving={createGradeMutation.isPending || updateGradeMutation.isPending}
+          saveError={createGradeMutation.error ?? updateGradeMutation.error}
           onStatusChange={(status) => {
             if (!selectedCell) {
               return

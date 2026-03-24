@@ -24,11 +24,13 @@ export function useInstructorAssignmentDetail(assignmentId: number) {
         queryKey: ['instructor', 'assignment-submissions', assignmentId],
         queryFn: () => getSubmissionsByAssignment(assignmentId),
         enabled,
+        staleTime: 1000 * 60 * 5,
       },
       {
         queryKey: ['instructor', 'assignment-grades', assignmentId],
         queryFn: () => getGradesByAssignment(assignmentId),
         enabled,
+        staleTime: 1000 * 60 * 5,
       },
     ],
   })

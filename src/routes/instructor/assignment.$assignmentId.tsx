@@ -1,6 +1,12 @@
 import { useState } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { LuArrowLeft, LuClipboardCheck, LuUsers, LuCheckCircle, LuClock } from 'react-icons/lu'
+import {
+  LuArrowLeft,
+  LuClipboardCheck,
+  LuUsers,
+  LuCircleCheck,
+  LuClock,
+} from 'react-icons/lu'
 
 import PageHeader from '#/components/PageHeader'
 import GlassContainer from '#/components/liquidGlass/GlassContainer'
@@ -9,7 +15,12 @@ import StatCard from '#/components/StatCard'
 import SectionFrame from '#/components/dashboard/SectionFrame'
 import InlineGradeForm from '#/components/detail/InlineGradeForm'
 import { useInstructorAssignmentDetail } from '#/hooks/instructor/useInstructorAssignmentDetail'
-import { formatDate, formatDateTime, formatStatusLabel, getFullName } from '#/lib/consultrix-format'
+import {
+  formatDate,
+  formatDateTime,
+  formatStatusLabel,
+  getFullName,
+} from '#/lib/consultrix-format'
 import type { GradeRequestDto } from '#/api/consultrix'
 
 export const Route = createFileRoute('/instructor/assignment/$assignmentId')({
@@ -30,7 +41,9 @@ function RouteComponent() {
     updateGradeMutation,
   } = useInstructorAssignmentDetail(id)
 
-  const [gradingSubmissionId, setGradingSubmissionId] = useState<number | null>(null)
+  const [gradingSubmissionId, setGradingSubmissionId] = useState<number | null>(
+    null,
+  )
 
   if (isLoading) {
     return (
@@ -45,7 +58,11 @@ function RouteComponent() {
     return (
       <div className="flex flex-col gap-6">
         <BackLink />
-        <PageHeader eyebrow="Assignment" title="Assignment not found" subtitle={`No assignment with ID ${id}`} />
+        <PageHeader
+          eyebrow="Assignment"
+          title="Assignment not found"
+          subtitle={`No assignment with ID ${id}`}
+        />
       </div>
     )
   }
@@ -54,10 +71,15 @@ function RouteComponent() {
   const grades = gradesQuery.data ?? []
   const instructorId = meQuery.data?.id
 
-  const gradedCount = submissions.filter((s) => grades.some((g) => g.submission.id === s.id)).length
-  const avgScore = grades.length > 0
-    ? Math.round(grades.reduce((sum, g) => sum + Number(g.score), 0) / grades.length)
-    : null
+  const gradedCount = submissions.filter((s) =>
+    grades.some((g) => g.submission.id === s.id),
+  ).length
+  const avgScore =
+    grades.length > 0
+      ? Math.round(
+          grades.reduce((sum, g) => sum + Number(g.score), 0) / grades.length,
+        )
+      : null
 
   function handleSaveGrade({
     gradeId,
@@ -83,8 +105,10 @@ function RouteComponent() {
     setGradingSubmissionId(null)
   }
 
-  const gradeMutationError = createGradeMutation.error ?? updateGradeMutation.error
-  const gradeMutationPending = createGradeMutation.isPending || updateGradeMutation.isPending
+  const gradeMutationError =
+    createGradeMutation.error ?? updateGradeMutation.error
+  const gradeMutationPending =
+    createGradeMutation.isPending || updateGradeMutation.isPending
 
   return (
     <div className="flex flex-col gap-6">
@@ -100,26 +124,50 @@ function RouteComponent() {
           <p className="text-xs uppercase tracking-[0.15em] text-white/40">
             Due {formatDate(assignment.dueDate)}
           </p>
-          <p className="text-xs text-white/35">Max score: {assignment.maxScore}</p>
+          <p className="text-xs text-white/35">
+            Max score: {assignment.maxScore}
+          </p>
         </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard icon={LuUsers} iconBgClassName="#0c2240" iconAccent="#38bdf8"
-          label="Submissions" value={String(submissions.length)} />
-        <StatCard icon={LuCheckCircle} iconBgClassName="#052e16" iconAccent="#4ade80"
-          label="Graded" value={String(gradedCount)} />
-        <StatCard icon={LuClock} iconBgClassName="#1e1b4b" iconAccent="#818cf8"
-          label="Pending" value={String(submissions.length - gradedCount)} />
-        <StatCard icon={LuClipboardCheck} iconBgClassName="#1c1107" iconAccent="#fb923c"
-          label="Avg Score" value={avgScore !== null ? String(avgScore) : 'N/A'} />
+        <StatCard
+          icon={LuUsers}
+          iconBgClassName="#0c2240"
+          iconAccent="#38bdf8"
+          label="Submissions"
+          value={String(submissions.length)}
+        />
+        <StatCard
+          icon={LuCircleCheck}
+          iconBgClassName="#052e16"
+          iconAccent="#4ade80"
+          label="Graded"
+          value={String(gradedCount)}
+        />
+        <StatCard
+          icon={LuClock}
+          iconBgClassName="#1e1b4b"
+          iconAccent="#818cf8"
+          label="Pending"
+          value={String(submissions.length - gradedCount)}
+        />
+        <StatCard
+          icon={LuClipboardCheck}
+          iconBgClassName="#1c1107"
+          iconAccent="#fb923c"
+          label="Avg Score"
+          value={avgScore !== null ? String(avgScore) : 'N/A'}
+        />
       </div>
 
       <SectionFrame label={`Submissions (${submissions.length})`}>
         {submissions.length > 0 ? (
           <div className="flex flex-col gap-3">
             {submissions.map((submission) => {
-              const grade = grades.find((g) => g.submission.id === submission.id)
+              const grade = grades.find(
+                (g) => g.submission.id === submission.id,
+              )
               const isGrading = gradingSubmissionId === submission.id
               const student = submission.student
 
@@ -135,7 +183,8 @@ function RouteComponent() {
                         {getFullName(student.firstName, student.lastName)}
                       </Link>
                       <p className="text-xs text-white/35">
-                        {formatDateTime(submission.submittedAt)} · {formatStatusLabel(submission.status)}
+                        {formatDateTime(submission.submittedAt)} ·{' '}
+                        {formatStatusLabel(submission.status)}
                       </p>
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
@@ -150,7 +199,9 @@ function RouteComponent() {
                       )}
                       <button
                         onClick={() =>
-                          setGradingSubmissionId(isGrading ? null : submission.id)
+                          setGradingSubmissionId(
+                            isGrading ? null : submission.id,
+                          )
                         }
                         className="rounded-lg bg-white/8 px-3 py-1 text-xs text-white/60 transition-colors hover:bg-white/15"
                       >
@@ -162,7 +213,15 @@ function RouteComponent() {
                   {isGrading && (
                     <InlineGradeForm
                       maxScore={Number(assignment.maxScore)}
-                      existingGrade={grade ? { id: grade.id, score: Number(grade.score), feedback: grade.feedback } : undefined}
+                      existingGrade={
+                        grade
+                          ? {
+                              id: grade.id,
+                              score: Number(grade.score),
+                              feedback: grade.feedback,
+                            }
+                          : undefined
+                      }
                       onSave={handleSaveGrade}
                       onCancel={() => setGradingSubmissionId(null)}
                       isPending={gradeMutationPending}
@@ -193,7 +252,9 @@ function RouteComponent() {
             })}
           </div>
         ) : (
-          <p className="py-4 text-center text-sm text-white/35">No submissions yet.</p>
+          <p className="py-4 text-center text-sm text-white/35">
+            No submissions yet.
+          </p>
         )}
       </SectionFrame>
     </div>

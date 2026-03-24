@@ -16,6 +16,7 @@ export type AttendanceSession = {
 export type AttendanceRecord = {
   studentId: string
   sessionId: string
+  attendanceId?: number
   status: AttendanceStatus
   note?: string
 }

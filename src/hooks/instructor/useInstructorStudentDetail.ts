@@ -26,16 +26,19 @@ export function useInstructorStudentDetail(studentId: number) {
         queryKey: ['instructor', 'student-grades', studentId],
         queryFn: () => getGradesByStudent(studentId),
         enabled,
+        staleTime: 1000 * 60 * 5,
       },
       {
         queryKey: ['instructor', 'student-submissions', studentId],
         queryFn: () => getSubmissionsByStudent(studentId),
         enabled,
+        staleTime: 1000 * 60 * 5,
       },
       {
         queryKey: ['instructor', 'student-attendance', studentId],
         queryFn: () => getAttendanceByStudent(studentId),
         enabled,
+        staleTime: 1000 * 60 * 5,
       },
     ],
   })
@@ -44,6 +47,7 @@ export function useInstructorStudentDetail(studentId: number) {
     queryKey: ['instructor', 'student-flags', studentId],
     queryFn: () => getFlagsForStudent(studentId),
     enabled,
+    staleTime: 1000 * 60, // 1 min
   })
 
   const invalidateFlags = () => {

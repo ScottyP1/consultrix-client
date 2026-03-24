@@ -6,5 +6,6 @@ export function useStudentAttendance() {
   return useQuery({
     queryKey: ['student', 'attendance'],
     queryFn: getAttendance,
+    staleTime: 1000 * 60 * 5,
   })
 }

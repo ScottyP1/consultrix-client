@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { LuBell, LuClipboardCheck, LuClock3 } from 'react-icons/lu'
+import { LuClipboardCheck, LuClock3 } from 'react-icons/lu'
 
 import DashboardGrid, {
   DashboardColumn,
@@ -260,31 +260,23 @@ function RouteComponent() {
 }
 
 function buildProgressItems(
-  grades: {
-    moduleId: number
-    moduleGradePercentage: number
-  }[],
+  _grades: unknown[],
   assignments: {
     moduleId: number
     moduleTitle: string
+    assignmentGradePercentage: number | null
   }[],
 ): DashboardProgressItem[] {
-  const moduleGrades = new Map<number, number>()
-  const moduleOrder = new Map<number, number>()
-  const moduleTitles = new Map<number, string>()
+  const moduleData = new Map<number, { title: string; percentages: number[] }>()
 
-  grades.forEach((grade) => {
-    if (!moduleGrades.has(grade.moduleId)) {
-      moduleGrades.set(grade.moduleId, grade.moduleGradePercentage)
-    }
-  })
-
-  assignments.forEach((assignment) => {
-    if (!moduleOrder.has(assignment.moduleId)) {
-      moduleOrder.set(assignment.moduleId, moduleOrder.size + 1)
-      moduleTitles.set(assignment.moduleId, assignment.moduleTitle)
-    }
-  })
+  assignments
+    .filter((a) => a.assignmentGradePercentage != null)
+    .forEach((a) => {
+      if (!moduleData.has(a.moduleId)) {
+        moduleData.set(a.moduleId, { title: a.moduleTitle, percentages: [] })
+      }
+      moduleData.get(a.moduleId)!.percentages.push(a.assignmentGradePercentage!)
+    })
 
   const colors = [
     'bg-linear-to-r from-cyan-500 to-blue-500',
@@ -293,18 +285,12 @@ function buildProgressItems(
     'bg-linear-65 from-emerald-500 to-cyan-500',
   ]
 
-  return Array.from(moduleGrades.entries())
-    .sort(
-      ([leftModuleId], [rightModuleId]) =>
-        (moduleOrder.get(leftModuleId) ?? Number.MAX_SAFE_INTEGER) -
-        (moduleOrder.get(rightModuleId) ?? Number.MAX_SAFE_INTEGER),
-    )
-    .map(([moduleId, percentage], index) => ({
-      label: moduleTitles.get(moduleId) ?? `Module ${moduleOrder.get(moduleId) ?? index + 1}`,
-      value: `${percentage}%`,
-      color: colors[index % colors.length],
-      variant: 'Dashboard',
-    }))
+  return Array.from(moduleData.entries()).map(([, { title, percentages }], index) => ({
+    label: title,
+    value: `${Math.round(percentages.reduce((s, p) => s + p, 0) / percentages.length)}%`,
+    color: colors[index % colors.length],
+    variant: 'Dashboard',
+  }))
 }
 
 function getDueTimestamp(dueDate?: string | null, dueTime?: string | null) {

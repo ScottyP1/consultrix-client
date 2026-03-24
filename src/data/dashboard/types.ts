@@ -49,4 +49,5 @@ export type DashboardQuickActionItem = {
   icon: IconType
   iconAccent: string
   bgColor: string
+  to?: string
 }
