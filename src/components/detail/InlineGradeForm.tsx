@@ -1,10 +1,14 @@
 import { useState } from 'react'
-import { LuAlertTriangle } from 'react-icons/lu'
+import { LuTriangleAlert } from 'react-icons/lu'
 
 interface InlineGradeFormProps {
   maxScore: number
   existingGrade?: { id: number; score: number; feedback?: string | null }
-  onSave: (params: { gradeId?: number; score: number; feedback: string }) => void
+  onSave: (params: {
+    gradeId?: number
+    score: number
+    feedback: string
+  }) => void
   onCancel: () => void
   isPending: boolean
   error?: Error | null
@@ -57,12 +61,16 @@ export default function InlineGradeForm({
           onClick={handleSave}
           className="rounded-xl bg-sky-500/20 px-4 py-2 text-sm text-sky-300 transition-colors hover:bg-sky-500/30 disabled:opacity-50"
         >
-          {isPending ? 'Saving…' : existingGrade ? 'Update Grade' : 'Save Grade'}
+          {isPending
+            ? 'Saving…'
+            : existingGrade
+              ? 'Update Grade'
+              : 'Save Grade'}
         </button>
       </div>
       {error && (
         <p className="flex items-center gap-1.5 text-xs text-red-400">
-          <LuAlertTriangle size={12} />
+          <LuTriangleAlert size={12} />
           {error.message}
         </p>
       )}
