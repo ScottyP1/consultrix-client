@@ -558,3 +558,90 @@ export function getActiveFlags() {
 export function getMyFlags() {
   return request<StudentFlagDto[]>('/flags/my')
 }
+
+// ── Messaging ─────────────────────────────────────────────────────────────────
+
+export interface UserSummaryDto {
+  id: number
+  firstName: string
+  lastName: string
+  role: string
+}
+
+export interface MessageDto {
+  id: number
+  conversationId: number
+  sender: UserSummaryDto
+  content: string
+  deleted: boolean
+  sentAt: string
+}
+
+export interface ConversationDto {
+  id: number
+  name: string
+  type: 'DIRECT' | 'GROUP'
+  members: UserSummaryDto[]
+  lastMessage: MessageDto | null
+  createdAt: string
+}
+
+export interface CreateConversationPayload {
+  name?: string
+  type: 'DIRECT' | 'GROUP'
+  memberIds: number[]
+}
+
+export function getConversations() {
+  return request<ConversationDto[]>('/conversations')
+}
+
+export function createConversation(payload: CreateConversationPayload) {
+  return request<ConversationDto>('/conversations', { method: 'POST', data: payload })
+}
+
+export function getConversationMessages(conversationId: number) {
+  return request<MessageDto[]>(`/conversations/${conversationId}/messages`)
+}
+
+export function deleteMessage(messageId: number) {
+  return request<void>(`/conversations/messages/${messageId}`, { method: 'DELETE' })
+}
+
+// ── Calendar Events ───────────────────────────────────────────────────────────
+
+export interface CalendarEventDto {
+  id: number
+  title: string
+  description?: string | null
+  startTime: string
+  endTime?: string | null
+  eventType: string
+  cohortId?: number | null
+  cohortName?: string | null
+  conversation?: ConversationDto | null
+  createdBy: UserSummaryDto
+  createdAt: string
+}
+
+export interface CreateCalendarEventPayload {
+  title: string
+  description?: string
+  startTime: string
+  endTime?: string
+  eventType: string
+  cohortId?: number
+  conversationId?: number
+}
+
+export function getCalendarEvents() {
+  return request<CalendarEventDto[]>('/calendar/events')
+}
+
+export function createCalendarEvent(payload: CreateCalendarEventPayload) {
+  return request<CalendarEventDto>('/calendar/events', { method: 'POST', data: payload })
+}
+
+export function deleteCalendarEvent(eventId: number) {
+  return request<void>(`/calendar/events/${eventId}`, { method: 'DELETE' })
+}
