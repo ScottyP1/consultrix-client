@@ -9,12 +9,14 @@ export type StatsSectionItem = {
 }
 
 export type DashboardActionItemData = {
+  assignmentId: number
   title: string
   subTitle: string
   btnLabel: string
   icon: IconType
   iconAccent: string
   iconBg: string
+  isLate?: boolean
 }
 
 export type DashboardProgressItem = {

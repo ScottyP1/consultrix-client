@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as StudentRouteRouteImport } from './routes/student/route'
 import { Route as InstructorRouteRouteImport } from './routes/instructor/route'
 import { Route as AuthRouteRouteImport } from './routes/auth/route'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as StudentSyllabusRouteImport } from './routes/student/syllabus'
 import { Route as StudentProfileRouteImport } from './routes/student/profile'
@@ -30,6 +31,19 @@ import { Route as InstructorAttendanceRouteImport } from './routes/instructor/at
 import { Route as InstructorAssignmentsRouteImport } from './routes/instructor/assignments'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as AdminStudentsRouteImport } from './routes/admin/students'
+import { Route as AdminInstructorsRouteImport } from './routes/admin/instructors'
+import { Route as AdminFacilitiesRouteImport } from './routes/admin/facilities'
+import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
+import { Route as AdminCohortsRouteImport } from './routes/admin/cohorts'
+import { Route as StudentAssignmentAssignmentIdRouteImport } from './routes/student/assignment.$assignmentId'
+import { Route as InstructorStudentStudentIdRouteImport } from './routes/instructor/student.$studentId'
+import { Route as InstructorAssignmentAssignmentIdRouteImport } from './routes/instructor/assignment.$assignmentId'
+import { Route as AdminStudentStudentIdRouteImport } from './routes/admin/student.$studentId'
+import { Route as AdminModuleModuleIdRouteImport } from './routes/admin/module.$moduleId'
+import { Route as AdminInstructorInstructorIdRouteImport } from './routes/admin/instructor.$instructorId'
+import { Route as AdminFacilityFacilityIdRouteImport } from './routes/admin/facility.$facilityId'
+import { Route as AdminCohortCohortIdRouteImport } from './routes/admin/cohort.$cohortId'
 
 const StudentRouteRoute = StudentRouteRouteImport.update({
   id: '/student',
@@ -44,6 +58,11 @@ const InstructorRouteRoute = InstructorRouteRouteImport.update({
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -136,12 +155,87 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const AdminStudentsRoute = AdminStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminInstructorsRoute = AdminInstructorsRouteImport.update({
+  id: '/instructors',
+  path: '/instructors',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminFacilitiesRoute = AdminFacilitiesRouteImport.update({
+  id: '/facilities',
+  path: '/facilities',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminCohortsRoute = AdminCohortsRouteImport.update({
+  id: '/cohorts',
+  path: '/cohorts',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const StudentAssignmentAssignmentIdRoute =
+  StudentAssignmentAssignmentIdRouteImport.update({
+    id: '/assignment/$assignmentId',
+    path: '/assignment/$assignmentId',
+    getParentRoute: () => StudentRouteRoute,
+  } as any)
+const InstructorStudentStudentIdRoute =
+  InstructorStudentStudentIdRouteImport.update({
+    id: '/student/$studentId',
+    path: '/student/$studentId',
+    getParentRoute: () => InstructorRouteRoute,
+  } as any)
+const InstructorAssignmentAssignmentIdRoute =
+  InstructorAssignmentAssignmentIdRouteImport.update({
+    id: '/assignment/$assignmentId',
+    path: '/assignment/$assignmentId',
+    getParentRoute: () => InstructorRouteRoute,
+  } as any)
+const AdminStudentStudentIdRoute = AdminStudentStudentIdRouteImport.update({
+  id: '/student/$studentId',
+  path: '/student/$studentId',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminModuleModuleIdRoute = AdminModuleModuleIdRouteImport.update({
+  id: '/module/$moduleId',
+  path: '/module/$moduleId',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminInstructorInstructorIdRoute =
+  AdminInstructorInstructorIdRouteImport.update({
+    id: '/instructor/$instructorId',
+    path: '/instructor/$instructorId',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
+const AdminFacilityFacilityIdRoute = AdminFacilityFacilityIdRouteImport.update({
+  id: '/facility/$facilityId',
+  path: '/facility/$facilityId',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminCohortCohortIdRoute = AdminCohortCohortIdRouteImport.update({
+  id: '/cohort/$cohortId',
+  path: '/cohort/$cohortId',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
   '/instructor': typeof InstructorRouteRouteWithChildren
   '/student': typeof StudentRouteRouteWithChildren
+  '/admin/cohorts': typeof AdminCohortsRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/facilities': typeof AdminFacilitiesRoute
+  '/admin/instructors': typeof AdminInstructorsRoute
+  '/admin/students': typeof AdminStudentsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/instructor/assignments': typeof InstructorAssignmentsRoute
@@ -159,12 +253,26 @@ export interface FileRoutesByFullPath {
   '/student/messages': typeof StudentMessagesRoute
   '/student/profile': typeof StudentProfileRoute
   '/student/syllabus': typeof StudentSyllabusRoute
+  '/admin/cohort/$cohortId': typeof AdminCohortCohortIdRoute
+  '/admin/facility/$facilityId': typeof AdminFacilityFacilityIdRoute
+  '/admin/instructor/$instructorId': typeof AdminInstructorInstructorIdRoute
+  '/admin/module/$moduleId': typeof AdminModuleModuleIdRoute
+  '/admin/student/$studentId': typeof AdminStudentStudentIdRoute
+  '/instructor/assignment/$assignmentId': typeof InstructorAssignmentAssignmentIdRoute
+  '/instructor/student/$studentId': typeof InstructorStudentStudentIdRoute
+  '/student/assignment/$assignmentId': typeof StudentAssignmentAssignmentIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
   '/instructor': typeof InstructorRouteRouteWithChildren
   '/student': typeof StudentRouteRouteWithChildren
+  '/admin/cohorts': typeof AdminCohortsRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/facilities': typeof AdminFacilitiesRoute
+  '/admin/instructors': typeof AdminInstructorsRoute
+  '/admin/students': typeof AdminStudentsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/instructor/assignments': typeof InstructorAssignmentsRoute
@@ -182,13 +290,27 @@ export interface FileRoutesByTo {
   '/student/messages': typeof StudentMessagesRoute
   '/student/profile': typeof StudentProfileRoute
   '/student/syllabus': typeof StudentSyllabusRoute
+  '/admin/cohort/$cohortId': typeof AdminCohortCohortIdRoute
+  '/admin/facility/$facilityId': typeof AdminFacilityFacilityIdRoute
+  '/admin/instructor/$instructorId': typeof AdminInstructorInstructorIdRoute
+  '/admin/module/$moduleId': typeof AdminModuleModuleIdRoute
+  '/admin/student/$studentId': typeof AdminStudentStudentIdRoute
+  '/instructor/assignment/$assignmentId': typeof InstructorAssignmentAssignmentIdRoute
+  '/instructor/student/$studentId': typeof InstructorStudentStudentIdRoute
+  '/student/assignment/$assignmentId': typeof StudentAssignmentAssignmentIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
   '/instructor': typeof InstructorRouteRouteWithChildren
   '/student': typeof StudentRouteRouteWithChildren
+  '/admin/cohorts': typeof AdminCohortsRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/facilities': typeof AdminFacilitiesRoute
+  '/admin/instructors': typeof AdminInstructorsRoute
+  '/admin/students': typeof AdminStudentsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/instructor/assignments': typeof InstructorAssignmentsRoute
@@ -206,14 +328,28 @@ export interface FileRoutesById {
   '/student/messages': typeof StudentMessagesRoute
   '/student/profile': typeof StudentProfileRoute
   '/student/syllabus': typeof StudentSyllabusRoute
+  '/admin/cohort/$cohortId': typeof AdminCohortCohortIdRoute
+  '/admin/facility/$facilityId': typeof AdminFacilityFacilityIdRoute
+  '/admin/instructor/$instructorId': typeof AdminInstructorInstructorIdRoute
+  '/admin/module/$moduleId': typeof AdminModuleModuleIdRoute
+  '/admin/student/$studentId': typeof AdminStudentStudentIdRoute
+  '/instructor/assignment/$assignmentId': typeof InstructorAssignmentAssignmentIdRoute
+  '/instructor/student/$studentId': typeof InstructorStudentStudentIdRoute
+  '/student/assignment/$assignmentId': typeof StudentAssignmentAssignmentIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/auth'
     | '/instructor'
     | '/student'
+    | '/admin/cohorts'
+    | '/admin/dashboard'
+    | '/admin/facilities'
+    | '/admin/instructors'
+    | '/admin/students'
     | '/auth/login'
     | '/auth/register'
     | '/instructor/assignments'
@@ -231,12 +367,26 @@ export interface FileRouteTypes {
     | '/student/messages'
     | '/student/profile'
     | '/student/syllabus'
+    | '/admin/cohort/$cohortId'
+    | '/admin/facility/$facilityId'
+    | '/admin/instructor/$instructorId'
+    | '/admin/module/$moduleId'
+    | '/admin/student/$studentId'
+    | '/instructor/assignment/$assignmentId'
+    | '/instructor/student/$studentId'
+    | '/student/assignment/$assignmentId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/auth'
     | '/instructor'
     | '/student'
+    | '/admin/cohorts'
+    | '/admin/dashboard'
+    | '/admin/facilities'
+    | '/admin/instructors'
+    | '/admin/students'
     | '/auth/login'
     | '/auth/register'
     | '/instructor/assignments'
@@ -254,12 +404,26 @@ export interface FileRouteTypes {
     | '/student/messages'
     | '/student/profile'
     | '/student/syllabus'
+    | '/admin/cohort/$cohortId'
+    | '/admin/facility/$facilityId'
+    | '/admin/instructor/$instructorId'
+    | '/admin/module/$moduleId'
+    | '/admin/student/$studentId'
+    | '/instructor/assignment/$assignmentId'
+    | '/instructor/student/$studentId'
+    | '/student/assignment/$assignmentId'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/auth'
     | '/instructor'
     | '/student'
+    | '/admin/cohorts'
+    | '/admin/dashboard'
+    | '/admin/facilities'
+    | '/admin/instructors'
+    | '/admin/students'
     | '/auth/login'
     | '/auth/register'
     | '/instructor/assignments'
@@ -277,10 +441,19 @@ export interface FileRouteTypes {
     | '/student/messages'
     | '/student/profile'
     | '/student/syllabus'
+    | '/admin/cohort/$cohortId'
+    | '/admin/facility/$facilityId'
+    | '/admin/instructor/$instructorId'
+    | '/admin/module/$moduleId'
+    | '/admin/student/$studentId'
+    | '/instructor/assignment/$assignmentId'
+    | '/instructor/student/$studentId'
+    | '/student/assignment/$assignmentId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   InstructorRouteRoute: typeof InstructorRouteRouteWithChildren
   StudentRouteRoute: typeof StudentRouteRouteWithChildren
@@ -307,6 +480,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -435,8 +615,129 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/admin/students': {
+      id: '/admin/students'
+      path: '/students'
+      fullPath: '/admin/students'
+      preLoaderRoute: typeof AdminStudentsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/instructors': {
+      id: '/admin/instructors'
+      path: '/instructors'
+      fullPath: '/admin/instructors'
+      preLoaderRoute: typeof AdminInstructorsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/facilities': {
+      id: '/admin/facilities'
+      path: '/facilities'
+      fullPath: '/admin/facilities'
+      preLoaderRoute: typeof AdminFacilitiesRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/cohorts': {
+      id: '/admin/cohorts'
+      path: '/cohorts'
+      fullPath: '/admin/cohorts'
+      preLoaderRoute: typeof AdminCohortsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/student/assignment/$assignmentId': {
+      id: '/student/assignment/$assignmentId'
+      path: '/assignment/$assignmentId'
+      fullPath: '/student/assignment/$assignmentId'
+      preLoaderRoute: typeof StudentAssignmentAssignmentIdRouteImport
+      parentRoute: typeof StudentRouteRoute
+    }
+    '/instructor/student/$studentId': {
+      id: '/instructor/student/$studentId'
+      path: '/student/$studentId'
+      fullPath: '/instructor/student/$studentId'
+      preLoaderRoute: typeof InstructorStudentStudentIdRouteImport
+      parentRoute: typeof InstructorRouteRoute
+    }
+    '/instructor/assignment/$assignmentId': {
+      id: '/instructor/assignment/$assignmentId'
+      path: '/assignment/$assignmentId'
+      fullPath: '/instructor/assignment/$assignmentId'
+      preLoaderRoute: typeof InstructorAssignmentAssignmentIdRouteImport
+      parentRoute: typeof InstructorRouteRoute
+    }
+    '/admin/student/$studentId': {
+      id: '/admin/student/$studentId'
+      path: '/student/$studentId'
+      fullPath: '/admin/student/$studentId'
+      preLoaderRoute: typeof AdminStudentStudentIdRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/module/$moduleId': {
+      id: '/admin/module/$moduleId'
+      path: '/module/$moduleId'
+      fullPath: '/admin/module/$moduleId'
+      preLoaderRoute: typeof AdminModuleModuleIdRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/instructor/$instructorId': {
+      id: '/admin/instructor/$instructorId'
+      path: '/instructor/$instructorId'
+      fullPath: '/admin/instructor/$instructorId'
+      preLoaderRoute: typeof AdminInstructorInstructorIdRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/facility/$facilityId': {
+      id: '/admin/facility/$facilityId'
+      path: '/facility/$facilityId'
+      fullPath: '/admin/facility/$facilityId'
+      preLoaderRoute: typeof AdminFacilityFacilityIdRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/cohort/$cohortId': {
+      id: '/admin/cohort/$cohortId'
+      path: '/cohort/$cohortId'
+      fullPath: '/admin/cohort/$cohortId'
+      preLoaderRoute: typeof AdminCohortCohortIdRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
   }
 }
+
+interface AdminRouteRouteChildren {
+  AdminCohortsRoute: typeof AdminCohortsRoute
+  AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminFacilitiesRoute: typeof AdminFacilitiesRoute
+  AdminInstructorsRoute: typeof AdminInstructorsRoute
+  AdminStudentsRoute: typeof AdminStudentsRoute
+  AdminCohortCohortIdRoute: typeof AdminCohortCohortIdRoute
+  AdminFacilityFacilityIdRoute: typeof AdminFacilityFacilityIdRoute
+  AdminInstructorInstructorIdRoute: typeof AdminInstructorInstructorIdRoute
+  AdminModuleModuleIdRoute: typeof AdminModuleModuleIdRoute
+  AdminStudentStudentIdRoute: typeof AdminStudentStudentIdRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminCohortsRoute: AdminCohortsRoute,
+  AdminDashboardRoute: AdminDashboardRoute,
+  AdminFacilitiesRoute: AdminFacilitiesRoute,
+  AdminInstructorsRoute: AdminInstructorsRoute,
+  AdminStudentsRoute: AdminStudentsRoute,
+  AdminCohortCohortIdRoute: AdminCohortCohortIdRoute,
+  AdminFacilityFacilityIdRoute: AdminFacilityFacilityIdRoute,
+  AdminInstructorInstructorIdRoute: AdminInstructorInstructorIdRoute,
+  AdminModuleModuleIdRoute: AdminModuleModuleIdRoute,
+  AdminStudentStudentIdRoute: AdminStudentStudentIdRoute,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
 
 interface AuthRouteRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
@@ -461,6 +762,8 @@ interface InstructorRouteRouteChildren {
   InstructorMessagesRoute: typeof InstructorMessagesRoute
   InstructorProfileRoute: typeof InstructorProfileRoute
   InstructorSubmissionsRoute: typeof InstructorSubmissionsRoute
+  InstructorAssignmentAssignmentIdRoute: typeof InstructorAssignmentAssignmentIdRoute
+  InstructorStudentStudentIdRoute: typeof InstructorStudentStudentIdRoute
 }
 
 const InstructorRouteRouteChildren: InstructorRouteRouteChildren = {
@@ -472,6 +775,8 @@ const InstructorRouteRouteChildren: InstructorRouteRouteChildren = {
   InstructorMessagesRoute: InstructorMessagesRoute,
   InstructorProfileRoute: InstructorProfileRoute,
   InstructorSubmissionsRoute: InstructorSubmissionsRoute,
+  InstructorAssignmentAssignmentIdRoute: InstructorAssignmentAssignmentIdRoute,
+  InstructorStudentStudentIdRoute: InstructorStudentStudentIdRoute,
 }
 
 const InstructorRouteRouteWithChildren = InstructorRouteRoute._addFileChildren(
@@ -486,6 +791,7 @@ interface StudentRouteRouteChildren {
   StudentMessagesRoute: typeof StudentMessagesRoute
   StudentProfileRoute: typeof StudentProfileRoute
   StudentSyllabusRoute: typeof StudentSyllabusRoute
+  StudentAssignmentAssignmentIdRoute: typeof StudentAssignmentAssignmentIdRoute
 }
 
 const StudentRouteRouteChildren: StudentRouteRouteChildren = {
@@ -496,6 +802,7 @@ const StudentRouteRouteChildren: StudentRouteRouteChildren = {
   StudentMessagesRoute: StudentMessagesRoute,
   StudentProfileRoute: StudentProfileRoute,
   StudentSyllabusRoute: StudentSyllabusRoute,
+  StudentAssignmentAssignmentIdRoute: StudentAssignmentAssignmentIdRoute,
 }
 
 const StudentRouteRouteWithChildren = StudentRouteRoute._addFileChildren(
@@ -504,6 +811,7 @@ const StudentRouteRouteWithChildren = StudentRouteRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
   AuthRouteRoute: AuthRouteRouteWithChildren,
   InstructorRouteRoute: InstructorRouteRouteWithChildren,
   StudentRouteRoute: StudentRouteRouteWithChildren,

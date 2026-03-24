@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import type { IconType } from 'react-icons'
 import { LuCircleCheck, LuFile } from 'react-icons/lu'
 import type { StudentAssignmentItem, StudentAssignmentStatus } from '#/data/assignments/types'
@@ -52,35 +53,39 @@ const AssignmentsList = ({ items }: { items: StudentAssignmentItem[] }) => {
         const Icon = statusMeta[item.status].icon
 
         return (
-          <GlassContainer
-            key={`${item.title}-${item.status}`}
-            className="flex items-center justify-between gap-4"
+          <Link
+            key={item.assignmentId}
+            to="/student/assignment/$assignmentId"
+            params={{ assignmentId: String(item.assignmentId) }}
+            className="block"
           >
-            <div className="flex min-w-0 items-center gap-4">
-              <div
-                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${statusMeta[item.status].iconBackgroundClassName}`}
-              >
-                <Icon className={statusMeta[item.status].iconClassName} size={22} />
-              </div>
-
-              <div className="flex min-w-0 flex-col justify-center">
-                <h2 className="truncate">{item.title}</h2>
-                <span className="text-sm text-white/45">{item.subtitle}</span>
-                <span className="text-xs text-white/25">{item.dueDate}</span>
-              </div>
-            </div>
-
-            <div className="flex shrink-0 items-center gap-3">
-              {statusMeta[item.status].badges.map((badge) => (
-                <span
-                  key={badge.label}
-                  className={`whitespace-nowrap rounded-lg px-3 py-1 ${badge.className}`}
+            <GlassContainer className="flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
+              <div className="flex min-w-0 items-center gap-4">
+                <div
+                  className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${statusMeta[item.status].iconBackgroundClassName}`}
                 >
-                  {badge.label}
-                </span>
-              ))}
-            </div>
-          </GlassContainer>
+                  <Icon className={statusMeta[item.status].iconClassName} size={22} />
+                </div>
+
+                <div className="flex min-w-0 flex-col justify-center">
+                  <h2 className="truncate">{item.title}</h2>
+                  <span className="text-sm text-white/45">{item.subtitle}</span>
+                  <span className="text-xs text-white/25">{item.dueDate}</span>
+                </div>
+              </div>
+
+              <div className="flex shrink-0 items-center gap-3">
+                {statusMeta[item.status].badges.map((badge) => (
+                  <span
+                    key={badge.label}
+                    className={`whitespace-nowrap rounded-lg px-3 py-1 ${badge.className}`}
+                  >
+                    {badge.label}
+                  </span>
+                ))}
+              </div>
+            </GlassContainer>
+          </Link>
         )
       })}
     </>

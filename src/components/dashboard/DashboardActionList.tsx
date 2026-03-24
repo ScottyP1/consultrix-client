@@ -14,12 +14,14 @@ const DashboardActionList = ({
       {items.map((item, index) => (
         <ActionItem
           key={`${item.title}-${index}`}
+          assignmentId={item.assignmentId}
           icon={item.icon}
           iconAccent={item.iconAccent}
           iconBg={item.iconBg}
           title={item.title}
           subTitle={item.subTitle}
           btnLabel={item.btnLabel}
+          isLate={item.isLate}
         />
       ))}
     </div>

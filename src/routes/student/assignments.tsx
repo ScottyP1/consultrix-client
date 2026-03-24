@@ -49,6 +49,7 @@ function RouteComponent() {
     () =>
       (assignmentsQuery.data ?? [])
         .map((assignment) => ({
+          assignmentId: assignment.assignmentId,
           title: assignment.title,
           subtitle: assignment.description || assignment.moduleTitle,
           dueDate: formatAssignmentDueDate(

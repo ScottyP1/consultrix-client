@@ -1,5 +1,6 @@
 import {
   BookOpen,
+  Building2,
   CalendarDays,
   FileText,
   GraduationCap,
@@ -10,6 +11,7 @@ import {
   ClipboardList,
   UserRoundCheck,
   SquareCheck,
+  Users,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -27,6 +29,14 @@ export const studentNavLinks: SideBarLink[] = [
   { title: 'Calendar', icon: CalendarDays, href: '/student/calendar' },
   { title: 'Messages', icon: MessageSquareText, href: '/student/messages' },
   { title: 'Profile', icon: UserCircle2, href: '/student/profile' },
+]
+
+export const adminNavLinks: SideBarLink[] = [
+  { title: 'Dashboard', icon: LayoutGrid, href: '/admin/dashboard' },
+  { title: 'Facilities', icon: Building2, href: '/admin/facilities' },
+  { title: 'Cohorts', icon: Users, href: '/admin/cohorts' },
+  { title: 'Students', icon: GraduationCap, href: '/admin/students' },
+  { title: 'Instructors', icon: UserRoundCheck, href: '/admin/instructors' },
 ]
 
 export const instructorNavLinks: SideBarLink[] = [

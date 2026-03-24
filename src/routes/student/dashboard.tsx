@@ -121,22 +121,35 @@ function RouteComponent() {
   })
 
   const actionItems: DashboardActionItemData[] = assignments
-    .filter((assignment) => assignment.courseworkStatus !== 'GRADED')
-    .slice(0, 3)
+    .filter((assignment) =>
+      assignment.courseworkStatus === 'LATE' ||
+      assignment.courseworkStatus === 'PENDING' ||
+      assignment.courseworkStatus === 'SUBMITTED',
+    )
+    // LATE first, then PENDING, then SUBMITTED
+    .sort((a, b) => {
+      const order = { LATE: 0, PENDING: 1, SUBMITTED: 2 }
+      return (order[a.courseworkStatus as keyof typeof order] ?? 3) -
+             (order[b.courseworkStatus as keyof typeof order] ?? 3)
+    })
+    .slice(0, 5)
     .map((assignment) => {
       const dueDate = formatAssignmentDueDate(
         assignment.dueDate,
         assignment.dueTime,
       )
+      const isLate = assignment.courseworkStatus === 'LATE'
       const isSubmitted = assignment.courseworkStatus === 'SUBMITTED'
 
       return {
+        assignmentId: assignment.assignmentId,
         icon: isSubmitted ? LuClipboardCheck : LuClock3,
-        iconAccent: isSubmitted ? '#0C8CE9' : '#FEAF15',
-        iconBg: isSubmitted ? '#113745' : '#47311B',
+        iconAccent: isLate ? '#EF4444' : isSubmitted ? '#0C8CE9' : '#FEAF15',
+        iconBg: isLate ? '#3B1010' : isSubmitted ? '#113745' : '#47311B',
         title: assignment.title,
-        subTitle: `Due ${dueDate}`,
-        btnLabel: isSubmitted ? 'Review' : 'Submit',
+        subTitle: `${assignment.moduleTitle} · Due ${dueDate}`,
+        btnLabel: isSubmitted ? 'Review' : isLate ? 'Submit Now' : 'Submit',
+        isLate,
       }
     })
 
@@ -253,10 +266,12 @@ function buildProgressItems(
   }[],
   assignments: {
     moduleId: number
+    moduleTitle: string
   }[],
 ): DashboardProgressItem[] {
   const moduleGrades = new Map<number, number>()
   const moduleOrder = new Map<number, number>()
+  const moduleTitles = new Map<number, string>()
 
   grades.forEach((grade) => {
     if (!moduleGrades.has(grade.moduleId)) {
@@ -267,6 +282,7 @@ function buildProgressItems(
   assignments.forEach((assignment) => {
     if (!moduleOrder.has(assignment.moduleId)) {
       moduleOrder.set(assignment.moduleId, moduleOrder.size + 1)
+      moduleTitles.set(assignment.moduleId, assignment.moduleTitle)
     }
   })
 
@@ -284,7 +300,7 @@ function buildProgressItems(
         (moduleOrder.get(rightModuleId) ?? Number.MAX_SAFE_INTEGER),
     )
     .map(([moduleId, percentage], index) => ({
-      label: `Module ${moduleOrder.get(moduleId) ?? index + 1}`,
+      label: moduleTitles.get(moduleId) ?? `Module ${moduleOrder.get(moduleId) ?? index + 1}`,
       value: `${percentage}%`,
       color: colors[index % colors.length],
       variant: 'Dashboard',
