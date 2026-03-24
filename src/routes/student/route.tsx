@@ -7,6 +7,7 @@ import { studentNavLinks } from '@/components/navigation/sidebar-config'
 import { requireAuth } from '@/lib/require-auth'
 import { getDefaultRouteForRole, ROLE_STUDENT } from '@/lib/auth-role'
 import SideBar from '#/components/navigation/SideBar'
+import { StompClientProvider } from '@/providers/StompClientProvider'
 
 import Grainient from '#/components/Grainient'
 import MagicRings from '#/components/MagicRings'
@@ -36,6 +37,7 @@ function RouteComponent() {
   }
 
   return (
+    <StompClientProvider>
     <div className="relative min-h-screen overflow-x-hidden text-white">
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
         {/* <Grainient
@@ -98,5 +100,6 @@ function RouteComponent() {
         </div>
       </main>
     </div>
+    </StompClientProvider>
   )
 }

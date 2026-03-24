@@ -157,6 +157,7 @@ export const instructorQuickActions: DashboardQuickActionItem[] = [
     title: 'Message Cohort',
     bgColor: '#26254B',
     iconAccent: '#99A8FD',
+    to: '/instructor/messages',
   },
   {
     icon: LuBookOpen,
@@ -170,5 +171,6 @@ export const instructorQuickActions: DashboardQuickActionItem[] = [
     title: 'Plan Session',
     bgColor: '#143A43',
     iconAccent: '#4ADEED',
+    to: '/instructor/calendar',
   },
 ]

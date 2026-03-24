@@ -10,6 +10,7 @@ export type StatsSectionItem = {
 
 export type DashboardActionItemData = {
   assignmentId?: number
+  to?: string
   title: string
   subTitle: string
   btnLabel: string
