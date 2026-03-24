@@ -54,6 +54,7 @@ export const instructorNavLinks: SideBarLink[] = [
     icon: UserRoundCheck,
     href: '/instructor/attendance',
   },
+  { title: 'Calendar', icon: CalendarDays, href: '/instructor/calendar' },
   { title: 'Messages', icon: MessageSquareText, href: '/instructor/messages' },
   { title: 'Profile', icon: UserCircle2, href: '/instructor/profile' },
 ]

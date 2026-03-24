@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { createFileRoute } from '@tanstack/react-router'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { LuFlag, LuCircleCheck } from 'react-icons/lu'
 
 import PageHeader from '#/components/PageHeader'
@@ -15,6 +14,7 @@ import type {
   GradebookStatus,
 } from '#/data/gradebook/types'
 import { useInstructorWorkspaceData } from '#/hooks/instructor/useInstructorWorkspaceData'
+import { useInstructorGradebook } from '#/hooks/instructor/useInstructorGradebook'
 import {
   formatAssignmentDueDate,
   toNumber,
@@ -24,15 +24,7 @@ import {
   deriveInstructorCohorts,
   getStudentName,
 } from '#/lib/instructor-workspace'
-import {
-  createFlag,
-  createGrade,
-  getMyFlags,
-  resolveFlag,
-  updateGrade,
-  type GradeRequestDto,
-  type StudentFlagRequestDto,
-} from '#/api/consultrix'
+import type { GradeRequestDto } from '#/api/consultrix'
 
 export const Route = createFileRoute('/instructor/gradebook')({
   component: RouteComponent,
@@ -50,7 +42,14 @@ function RouteComponent() {
     isLoading,
     error,
   } = useInstructorWorkspaceData()
-  const queryClient = useQueryClient()
+  const {
+    myFlagsQuery,
+    createFlagMutation,
+    resolveFlagMutation,
+    createGradeMutation,
+    updateGradeMutation,
+  } = useInstructorGradebook()
+
   const [selectedCohortId, setSelectedCohortId] = useState('')
   const [selectedModuleId, setSelectedModuleId] = useState('all')
   const [statusFilter, setStatusFilter] = useState<'all' | GradebookStatus>(
@@ -72,43 +71,6 @@ function RouteComponent() {
   const [flagPriority, setFlagPriority] = useState<'LOW' | 'MEDIUM' | 'HIGH'>(
     'MEDIUM',
   )
-
-  const myFlagsQuery = useQuery({
-    queryKey: ['instructor', 'my-flags'],
-    queryFn: getMyFlags,
-  })
-
-  const createFlagMutation = useMutation({
-    mutationFn: (payload: StudentFlagRequestDto) => createFlag(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['instructor', 'my-flags'] })
-      setFlagStudentId(null)
-      setFlagReason('')
-      setFlagPriority('MEDIUM')
-    },
-  })
-
-  const resolveFlagMutation = useMutation({
-    mutationFn: (id: number) => resolveFlag(id),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ['instructor', 'my-flags'] }),
-  })
-
-  const invalidateGrades = () => {
-    queryClient.invalidateQueries({ queryKey: ['instructor', 'grades'] })
-    queryClient.invalidateQueries({ queryKey: ['instructor', 'submissions'] })
-  }
-
-  const createGradeMutation = useMutation({
-    mutationFn: (payload: GradeRequestDto) => createGrade(payload),
-    onSuccess: invalidateGrades,
-  })
-
-  const updateGradeMutation = useMutation({
-    mutationFn: ({ gradeId, payload }: { gradeId: number; payload: GradeRequestDto }) =>
-      updateGrade(gradeId, payload),
-    onSuccess: invalidateGrades,
-  })
 
   const cohorts = useMemo<GradebookCohort[]>(() => {
     const students = studentsQuery.data ?? []
@@ -465,11 +427,10 @@ function RouteComponent() {
               </select>
               <button
                 onClick={() =>
-                  createFlagMutation.mutate({
-                    studentId: flagStudentId,
-                    reason: flagReason,
-                    priority: flagPriority,
-                  })
+                  createFlagMutation.mutate(
+                    { studentId: flagStudentId, reason: flagReason, priority: flagPriority },
+                    { onSuccess: () => { setFlagStudentId(null); setFlagReason(''); setFlagPriority('MEDIUM') } },
+                  )
                 }
                 disabled={!flagReason.trim() || createFlagMutation.isPending}
                 className="rounded-lg bg-red-500/20 px-4 py-2 text-sm text-red-300 hover:bg-red-500/30 transition-colors disabled:opacity-40"

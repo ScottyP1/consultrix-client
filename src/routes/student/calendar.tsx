@@ -1,12 +1,14 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { LuChevronLeft, LuChevronRight } from 'react-icons/lu'
+import { LuChevronLeft, LuChevronRight, LuUsers, LuX } from 'react-icons/lu'
 
 import GlassContainer from '#/components/liquidGlass/GlassContainer'
 import PageHeader from '#/components/PageHeader'
 import { useStudentAssignments } from '#/hooks/student/useStudentAssignments'
+import { useStudentCalendarEvents } from '#/hooks/student/useStudentCalendarEvents'
+import type { CalendarEventDto } from '@/api/consultrix'
 
-type CalendarEventType = 'assignment' | 'exam' | 'event'
+type CalendarEventType = 'assignment' | 'exam' | 'event' | 'class' | 'study_group'
 
 type CalendarEvent = {
   id: string
@@ -14,17 +16,14 @@ type CalendarEvent = {
   description: string
   date: Date
   type: CalendarEventType
+  serverEvent?: CalendarEventDto
 }
 
 const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
 const eventTypeMeta: Record<
   CalendarEventType,
-  {
-    chipClassName: string
-    markerClassName: string
-    label: string
-  }
+  { chipClassName: string; markerClassName: string; label: string }
 > = {
   assignment: {
     chipClassName: 'bg-rose-500/18 text-rose-300',
@@ -41,6 +40,16 @@ const eventTypeMeta: Record<
     markerClassName: 'bg-sky-400',
     label: 'Events',
   },
+  class: {
+    chipClassName: 'bg-emerald-500/18 text-emerald-300',
+    markerClassName: 'bg-emerald-400',
+    label: 'Classes',
+  },
+  study_group: {
+    chipClassName: 'bg-amber-500/18 text-amber-300',
+    markerClassName: 'bg-amber-400',
+    label: 'Study Groups',
+  },
 }
 
 export const Route = createFileRoute('/student/calendar')({
@@ -49,26 +58,45 @@ export const Route = createFileRoute('/student/calendar')({
 
 function RouteComponent() {
   const assignmentsQuery = useStudentAssignments()
+  const { serverEventsQuery, liveEvents } = useStudentCalendarEvents()
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
+
   const events = useMemo<CalendarEvent[]>(() => {
-    return (assignmentsQuery.data ?? [])
+    const assignmentEvents: CalendarEvent[] = (assignmentsQuery.data ?? [])
       .map((assignment) => {
         const date = getEventDate(assignment.dueDate, assignment.dueTime)
-
-        if (!date) {
-          return null
-        }
-
+        if (!date) return null
         return {
-          id: String(assignment.assignmentId),
+          id: `a-${assignment.assignmentId}`,
           title: assignment.title,
           description: assignment.description || assignment.moduleTitle,
           date,
           type: inferEventType(assignment.title, assignment.moduleTitle),
         }
       })
-      .filter((event): event is CalendarEvent => event !== null)
-      .sort((left, right) => left.date.getTime() - right.date.getTime())
-  }, [assignmentsQuery.data])
+      .filter((e): e is CalendarEvent => e !== null)
+
+    const allServerEvents = [...(serverEventsQuery.data ?? []), ...liveEvents]
+    const seenIds = new Set<number>()
+    const serverEvents: CalendarEvent[] = allServerEvents
+      .filter((e) => {
+        if (seenIds.has(e.id)) return false
+        seenIds.add(e.id)
+        return true
+      })
+      .map((e) => ({
+        id: `s-${e.id}`,
+        title: e.title,
+        description: e.description ?? e.cohortName ?? '',
+        date: new Date(e.startTime),
+        type: toCalendarEventType(e.eventType),
+        serverEvent: e,
+      }))
+
+    return [...assignmentEvents, ...serverEvents].sort(
+      (a, b) => a.date.getTime() - b.date.getTime(),
+    )
+  }, [assignmentsQuery.data, serverEventsQuery.data, liveEvents])
   const [visibleMonth, setVisibleMonth] = useState<Date>(() => {
     const anchor = events[0] ?? null
 
@@ -223,13 +251,15 @@ function RouteComponent() {
 
                   <div className="space-y-1.5">
                     {dayEvents.slice(0, 2).map((event) => (
-                      <div
+                      <button
                         key={event.id}
-                        className={`truncate rounded-md px-2 py-1 text-[11px] font-medium ${eventTypeMeta[event.type].chipClassName}`}
+                        type="button"
+                        onClick={() => setSelectedEvent(event)}
+                        className={`w-full truncate rounded-md px-2 py-1 text-left text-[11px] font-medium hover:opacity-80 ${eventTypeMeta[event.type].chipClassName}`}
                         title={event.title}
                       >
                         {event.title}
-                      </div>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -247,9 +277,11 @@ function RouteComponent() {
             {upcomingEvents.length > 0 ? (
               <div className="space-y-3">
                 {upcomingEvents.map((event) => (
-                  <div
+                  <button
                     key={event.id}
-                    className="rounded-2xl border border-white/8 bg-white/5 p-4"
+                    type="button"
+                    onClick={() => setSelectedEvent(event)}
+                    className="w-full rounded-2xl border border-white/8 bg-white/5 p-4 text-left hover:bg-white/8 transition"
                   >
                     <p className="text-sm font-semibold text-white">
                       {event.title}
@@ -267,7 +299,7 @@ function RouteComponent() {
                         {event.description}
                       </span>
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             ) : (
@@ -294,6 +326,63 @@ function RouteComponent() {
           </GlassContainer>
         </div>
       </div>
+
+      {/* Event detail modal */}
+      {selectedEvent && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
+          onClick={() => setSelectedEvent(null)}
+        >
+          <div
+            className="w-full max-w-md rounded-[18px] border border-white/10 bg-white/5 p-6 backdrop-blur-[10px]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-4 flex items-start justify-between gap-4">
+              <span
+                className={`rounded-md px-2 py-1 text-[10px] uppercase tracking-[0.18em] ${eventTypeMeta[selectedEvent.type].chipClassName}`}
+              >
+                {eventTypeMeta[selectedEvent.type].label}
+              </span>
+              <button
+                type="button"
+                onClick={() => setSelectedEvent(null)}
+                className="text-white/40 hover:text-white"
+              >
+                <LuX size={18} />
+              </button>
+            </div>
+            <h2 className="text-xl font-semibold text-white">{selectedEvent.title}</h2>
+            <p className="mt-1 text-sm text-white/50">{formatEventDate(selectedEvent.date)}</p>
+            {selectedEvent.description && (
+              <p className="mt-3 text-sm leading-6 text-white/70">{selectedEvent.description}</p>
+            )}
+            {selectedEvent.serverEvent?.conversation && (
+              <div className="mt-4 rounded-xl border border-white/8 bg-white/5 p-4">
+                <div className="mb-2 flex items-center gap-2 text-sm font-medium text-white/80">
+                  <LuUsers size={14} />
+                  Attendees
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {selectedEvent.serverEvent.conversation.members.map((m) => (
+                    <span
+                      key={m.id}
+                      className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-xs text-white/70"
+                    >
+                      {m.firstName} {m.lastName}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {selectedEvent.serverEvent?.createdBy && (
+              <p className="mt-3 text-xs text-white/35">
+                Created by {selectedEvent.serverEvent.createdBy.firstName}{' '}
+                {selectedEvent.serverEvent.createdBy.lastName}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -397,4 +486,15 @@ function formatEventDate(date: Date) {
     day: 'numeric',
     year: 'numeric',
   }).format(date)
+}
+
+function toCalendarEventType(serverType: string): CalendarEventType {
+  switch (serverType?.toUpperCase()) {
+    case 'EXAM': return 'exam'
+    case 'CLASS': return 'class'
+    case 'STUDY_GROUP': return 'study_group'
+    case 'ANNOUNCEMENT':
+    case 'OTHER': return 'event'
+    default: return 'event'
+  }
 }

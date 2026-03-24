@@ -23,6 +23,7 @@ import { Route as StudentCalendarRouteImport } from './routes/student/calendar'
 import { Route as StudentAssignmentsRouteImport } from './routes/student/assignments'
 import { Route as InstructorSubmissionsRouteImport } from './routes/instructor/submissions'
 import { Route as InstructorProfileRouteImport } from './routes/instructor/profile'
+import { Route as InstructorCalendarRouteImport } from './routes/instructor/calendar'
 import { Route as InstructorMessagesRouteImport } from './routes/instructor/messages'
 import { Route as InstructorGradebookRouteImport } from './routes/instructor/gradebook'
 import { Route as InstructorDashboardRouteImport } from './routes/instructor/dashboard'
@@ -113,6 +114,11 @@ const InstructorSubmissionsRoute = InstructorSubmissionsRouteImport.update({
 const InstructorProfileRoute = InstructorProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => InstructorRouteRoute,
+} as any)
+const InstructorCalendarRoute = InstructorCalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
   getParentRoute: () => InstructorRouteRoute,
 } as any)
 const InstructorMessagesRoute = InstructorMessagesRouteImport.update({
@@ -240,6 +246,7 @@ export interface FileRoutesByFullPath {
   '/auth/register': typeof AuthRegisterRoute
   '/instructor/assignments': typeof InstructorAssignmentsRoute
   '/instructor/attendance': typeof InstructorAttendanceRoute
+  '/instructor/calendar': typeof InstructorCalendarRoute
   '/instructor/cohorts': typeof InstructorCohortsRoute
   '/instructor/dashboard': typeof InstructorDashboardRoute
   '/instructor/gradebook': typeof InstructorGradebookRoute
@@ -277,6 +284,7 @@ export interface FileRoutesByTo {
   '/auth/register': typeof AuthRegisterRoute
   '/instructor/assignments': typeof InstructorAssignmentsRoute
   '/instructor/attendance': typeof InstructorAttendanceRoute
+  '/instructor/calendar': typeof InstructorCalendarRoute
   '/instructor/cohorts': typeof InstructorCohortsRoute
   '/instructor/dashboard': typeof InstructorDashboardRoute
   '/instructor/gradebook': typeof InstructorGradebookRoute
@@ -315,6 +323,7 @@ export interface FileRoutesById {
   '/auth/register': typeof AuthRegisterRoute
   '/instructor/assignments': typeof InstructorAssignmentsRoute
   '/instructor/attendance': typeof InstructorAttendanceRoute
+  '/instructor/calendar': typeof InstructorCalendarRoute
   '/instructor/cohorts': typeof InstructorCohortsRoute
   '/instructor/dashboard': typeof InstructorDashboardRoute
   '/instructor/gradebook': typeof InstructorGradebookRoute
@@ -354,6 +363,7 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/instructor/assignments'
     | '/instructor/attendance'
+    | '/instructor/calendar'
     | '/instructor/cohorts'
     | '/instructor/dashboard'
     | '/instructor/gradebook'
@@ -391,6 +401,7 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/instructor/assignments'
     | '/instructor/attendance'
+    | '/instructor/calendar'
     | '/instructor/cohorts'
     | '/instructor/dashboard'
     | '/instructor/gradebook'
@@ -428,6 +439,7 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/instructor/assignments'
     | '/instructor/attendance'
+    | '/instructor/calendar'
     | '/instructor/cohorts'
     | '/instructor/dashboard'
     | '/instructor/gradebook'
@@ -578,6 +590,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/instructor/dashboard'
       preLoaderRoute: typeof InstructorDashboardRouteImport
+      parentRoute: typeof InstructorRouteRoute
+    }
+    '/instructor/calendar': {
+      id: '/instructor/calendar'
+      path: '/calendar'
+      fullPath: '/instructor/calendar'
+      preLoaderRoute: typeof InstructorCalendarRouteImport
       parentRoute: typeof InstructorRouteRoute
     }
     '/instructor/cohorts': {
@@ -756,6 +775,7 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 interface InstructorRouteRouteChildren {
   InstructorAssignmentsRoute: typeof InstructorAssignmentsRoute
   InstructorAttendanceRoute: typeof InstructorAttendanceRoute
+  InstructorCalendarRoute: typeof InstructorCalendarRoute
   InstructorCohortsRoute: typeof InstructorCohortsRoute
   InstructorDashboardRoute: typeof InstructorDashboardRoute
   InstructorGradebookRoute: typeof InstructorGradebookRoute
@@ -769,6 +789,7 @@ interface InstructorRouteRouteChildren {
 const InstructorRouteRouteChildren: InstructorRouteRouteChildren = {
   InstructorAssignmentsRoute: InstructorAssignmentsRoute,
   InstructorAttendanceRoute: InstructorAttendanceRoute,
+  InstructorCalendarRoute: InstructorCalendarRoute,
   InstructorCohortsRoute: InstructorCohortsRoute,
   InstructorDashboardRoute: InstructorDashboardRoute,
   InstructorGradebookRoute: InstructorGradebookRoute,

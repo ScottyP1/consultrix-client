@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   LuArrowLeft,
   LuClipboardCheck,
@@ -14,11 +13,8 @@ import {
 
 import PageHeader from '#/components/PageHeader'
 import GlassContainer from '#/components/liquidGlass/GlassContainer'
-import {
-  getStudentCoursework,
-  getStudentProfile,
-  createSubmission,
-} from '#/api/consultrix'
+import { useStudentCoursework } from '#/hooks/student/useStudentCoursework'
+import { useStudentProfile } from '#/hooks/student/useStudentProfile'
 import {
   formatAssignmentDueDate,
   formatDateTime,
@@ -32,33 +28,11 @@ export const Route = createFileRoute('/student/assignment/$assignmentId')({
 function RouteComponent() {
   const { assignmentId } = Route.useParams()
   const id = Number(assignmentId)
-  const queryClient = useQueryClient()
 
   const [contentUrl, setContentUrl] = useState('')
 
-  const courseworkQuery = useQuery({
-    queryKey: ['student', 'coursework'],
-    queryFn: getStudentCoursework,
-  })
-
-  const profileQuery = useQuery({
-    queryKey: ['student', 'profile'],
-    queryFn: getStudentProfile,
-  })
-
-  const submitMutation = useMutation({
-    mutationFn: () =>
-      createSubmission({
-        assignmentId: id,
-        studentUserId: profileQuery.data?.userId,
-        submittedAt: new Date().toISOString(),
-        contentUrl: contentUrl.trim(),
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['student', 'coursework'] })
-      setContentUrl('')
-    },
-  })
+  const { courseworkQuery, submitMutation } = useStudentCoursework()
+  const profileQuery = useStudentProfile()
 
   if (courseworkQuery.isLoading) {
     return (
@@ -202,7 +176,15 @@ function RouteComponent() {
             </div>
             <button
               disabled={!contentUrl.trim() || submitMutation.isPending}
-              onClick={() => submitMutation.mutate()}
+              onClick={() => submitMutation.mutate(
+                {
+                  assignmentId: id,
+                  studentUserId: profileQuery.data?.userId,
+                  submittedAt: new Date().toISOString(),
+                  contentUrl: contentUrl.trim(),
+                },
+                { onSuccess: () => setContentUrl('') },
+              )}
               className="flex items-center gap-2 rounded-xl bg-sky-500/20 px-5 py-2.5 text-sm font-medium text-sky-300 transition-colors hover:bg-sky-500/30 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <LuSend size={14} />

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { createFileRoute } from '@tanstack/react-router'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useInstructorAttendanceMutations } from '#/hooks/instructor/useInstructorAttendanceMutations'
 import { LuSave } from 'react-icons/lu'
 
 import PageHeader from '#/components/PageHeader'
@@ -19,7 +19,7 @@ import type {
 import { useInstructorWorkspaceData } from '#/hooks/instructor/useInstructorWorkspaceData'
 import { formatDate, formatStatusLabel } from '#/lib/consultrix-format'
 import { deriveInstructorCohorts, getStudentName } from '#/lib/instructor-workspace'
-import { createAttendance, updateAttendance, type AttendanceRequestDto } from '#/api/consultrix'
+import type { AttendanceRequestDto } from '#/api/consultrix'
 
 export const Route = createFileRoute('/instructor/attendance')({
   component: RouteComponent,
@@ -51,16 +51,7 @@ function RouteComponent() {
   const [isSavingSession, setIsSavingSession] = useState(false)
   const [saveSessionError, setSaveSessionError] = useState<string | null>(null)
 
-  const queryClient = useQueryClient()
-
-  const createAttendanceMutation = useMutation({
-    mutationFn: (payload: AttendanceRequestDto) => createAttendance(payload),
-  })
-
-  const updateAttendanceMutation = useMutation({
-    mutationFn: ({ id, payload }: { id: number; payload: AttendanceRequestDto }) =>
-      updateAttendance(id, payload),
-  })
+  const { createAttendanceMutation, updateAttendanceMutation } = useInstructorAttendanceMutations()
 
   async function handleSubmitSession() {
     if (!selectedSession || !selectedCohort) return
@@ -86,7 +77,6 @@ function RouteComponent() {
           return createAttendanceMutation.mutateAsync(payload)
         }),
       )
-      queryClient.invalidateQueries({ queryKey: ['instructor', 'attendance'] })
       setLocalRecordOverrides({})
     } catch (err) {
       setSaveSessionError(err instanceof Error ? err.message : 'Failed to save attendance')
