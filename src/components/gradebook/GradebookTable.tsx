@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { cn } from '#/lib/utils'
 import type {
   GradebookAssignment,
@@ -83,9 +84,14 @@ const GradebookTable = ({
                   className="w-44 border-b border-white/10  px-4 py-4 text-left align-top"
                 >
                   <div className="space-y-1">
-                    <p className="text-sm font-medium text-white">
+                    <Link
+                      to="/instructor/assignment/$assignmentId"
+                      params={{ assignmentId: assignment.id }}
+                      className="text-sm font-medium text-white hover:text-white/70 transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       {assignment.title}
-                    </p>
+                    </Link>
                     <p className="text-xs text-white/45">
                       {assignment.pointsPossible} pts
                     </p>
@@ -104,9 +110,13 @@ const GradebookTable = ({
             <tr key={student.id}>
               <td className="sticky left-0 z-20 border-b border-white/6  px-4 py-4">
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-white">
+                  <Link
+                    to="/instructor/student/$studentId"
+                    params={{ studentId: student.id }}
+                    className="text-sm font-medium text-white hover:text-white/70 transition-colors"
+                  >
                     {student.name}
-                  </p>
+                  </Link>
                   <p className="text-xs text-white/40">{student.email}</p>
                 </div>
               </td>

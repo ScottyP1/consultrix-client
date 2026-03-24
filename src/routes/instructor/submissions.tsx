@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 
 import GlassContainer from '#/components/liquidGlass/GlassContainer'
 import PageHeader from '#/components/PageHeader'
@@ -62,11 +62,22 @@ function RouteComponent() {
               <GlassContainer key={submission.id} className="space-y-3 p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h2 className="text-lg font-semibold text-white">
+                    <Link
+                      to="/instructor/assignment/$assignmentId"
+                      params={{ assignmentId: String(submission.assignment.id) }}
+                      className="text-lg font-semibold text-white hover:text-white/75 transition-colors"
+                    >
                       {submission.assignment.title}
-                    </h2>
+                    </Link>
                     <p className="text-sm text-white/45">
-                      {getStudentName(submission.student)} ·{' '}
+                      <Link
+                        to="/instructor/student/$studentId"
+                        params={{ studentId: String(submission.student.id) }}
+                        className="hover:text-white/70 transition-colors"
+                      >
+                        {getStudentName(submission.student)}
+                      </Link>
+                      {' · '}
                       {submission.assignment.module.title}
                     </p>
                   </div>

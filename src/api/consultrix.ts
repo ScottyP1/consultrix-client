@@ -35,6 +35,13 @@ export interface FacilityEntity {
   id: number
   name?: string
   status?: string
+  addressLine1?: string
+  city?: string
+  state?: string
+  country?: string
+  capacity?: number
+  leaseStartDate?: string | null
+  leaseEndDate?: string | null
 }
 
 export interface CohortEntity {
@@ -218,6 +225,15 @@ export interface GradeRequestDto {
   instructorUserId: number
   score: number
   feedback?: string
+}
+
+export interface GradeResponseDto {
+  gradeId: number
+  submissionId: number
+  instructorUserId: number
+  score: number
+  feedback?: string | null
+  gradedAt: string | null
 }
 
 function handleUnauthorized() {
@@ -420,4 +436,125 @@ export function markNotificationRead(notificationId: number) {
       method: 'PATCH',
     },
   )
+}
+
+export function getCohorts() {
+  return request<CohortEntity[]>('/cohorts')
+}
+
+export function getFacilities() {
+  return request<FacilityEntity[]>('/facilities')
+}
+
+export function getInstructors() {
+  return request<InstructorEntity[]>('/instructors')
+}
+
+export interface AdminStatsDto {
+  // counts
+  totalStudents: number
+  totalInstructors: number
+  totalCohorts: number
+  totalFacilities: number
+  totalModules: number
+  totalAssignments: number
+  totalSubmissions: number
+  totalGrades: number
+  // pipeline
+  studentsNotStarted: number
+  studentsInProgress: number
+  studentsPlaced: number
+  // graduation
+  studentsGradActive: number
+  studentsGradCompleted: number
+  studentsGradWithdrawn: number
+  // interview
+  interviewNone: number
+  interviewScreen: number
+  interviewTechnical: number
+  interviewFinal: number
+  // cohort status
+  cohortsRecruiting: number
+  cohortsInterviewing: number
+  cohortsActive: number
+  cohortsCompleted: number
+  cohortsArchived: number
+  // submissions
+  submissionsSubmitted: number
+  submissionsLate: number
+  submissionsMissing: number
+  submissionsGraded: number
+  submissionsUngraded: number
+  // grade distribution
+  gradeCountA: number
+  gradeCountB: number
+  gradeCountC: number
+  gradeCountD: number
+  gradeCountF: number
+  platformAvgAssignmentGrade: number | null
+  // facilities
+  facilitiesActive: number
+  facilitiesPlanned: number
+  facilitiesClosed: number
+}
+
+export function getAdminStats() {
+  return request<AdminStatsDto>('/admin/stats')
+}
+
+export function getGradesByStudent(studentId: number) {
+  return request<GradeProfileResponseDto[]>(`/grades/student/${studentId}`)
+}
+
+export function getGradesByAssignment(assignmentId: number) {
+  return request<GradeEntity[]>(`/grades/assignment/${assignmentId}`)
+}
+
+// ── Student Flags ─────────────────────────────────────────────────────────────
+
+export interface StudentFlagDto {
+  id: number
+  studentId: number
+  studentFirstName: string
+  studentLastName: string
+  instructorId: number
+  instructorFirstName: string
+  instructorLastName: string
+  reason: string
+  /** LOW | MEDIUM | HIGH */
+  priority: 'LOW' | 'MEDIUM' | 'HIGH'
+  resolved: boolean
+  resolvedAt: string | null
+  createdAt: string
+}
+
+export interface StudentFlagRequestDto {
+  studentId: number
+  reason: string
+  priority: 'LOW' | 'MEDIUM' | 'HIGH'
+}
+
+/** Instructor/Admin: flag a student */
+export function createFlag(payload: StudentFlagRequestDto) {
+  return request<StudentFlagDto>('/flags', { method: 'POST', data: payload })
+}
+
+/** Instructor/Admin: resolve an existing flag */
+export function resolveFlag(flagId: number) {
+  return request<StudentFlagDto>(`/flags/${flagId}/resolve`, { method: 'PATCH' })
+}
+
+/** Instructor/Admin: get all flags for a specific student */
+export function getFlagsForStudent(studentId: number) {
+  return request<StudentFlagDto[]>(`/flags/student/${studentId}`)
+}
+
+/** Admin: get all unresolved flags across the platform */
+export function getActiveFlags() {
+  return request<StudentFlagDto[]>('/flags/active')
+}
+
+/** Instructor: get flags they created */
+export function getMyFlags() {
+  return request<StudentFlagDto[]>('/flags/my')
 }

@@ -5,6 +5,7 @@ export type StudentAssignmentStatus =
   | 'pending'
 
 export type StudentAssignmentItem = {
+  assignmentId: number
   title: string
   subtitle: string
   dueDate: string

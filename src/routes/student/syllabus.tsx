@@ -43,27 +43,36 @@ function RouteComponent() {
   )
   const modules = Array.from(
     (assignmentsQuery.data ?? [])
-      .reduce((accumulator, assignment) => {
-        const current = accumulator.get(assignment.moduleId) ?? {
-          module: assignment.moduleTitle,
-          moduleId: assignment.moduleId,
-          assignments: [] as { status: 'complete' | 'incomplete'; title: string }[],
-        }
+      .reduce(
+        (accumulator, assignment) => {
+          const current = accumulator.get(assignment.moduleId) ?? {
+            module: assignment.moduleTitle,
+            moduleId: assignment.moduleId,
+            assignments: [] as {
+              status: 'complete' | 'incomplete'
+              title: string
+            }[],
+          }
 
-        current.assignments.push({
-          title: assignment.title,
-          status: gradesByAssignmentId.has(assignment.assignmentId)
-            ? 'complete'
-            : 'incomplete',
-        })
-        accumulator.set(assignment.moduleId, current)
+          current.assignments.push({
+            title: assignment.title,
+            status: gradesByAssignmentId.has(assignment.assignmentId)
+              ? 'complete'
+              : 'incomplete',
+          })
+          accumulator.set(assignment.moduleId, current)
 
-        return accumulator
-      }, new Map<number, {
-        module: string
-        moduleId: number
-        assignments: { status: 'complete' | 'incomplete'; title: string }[]
-      }>())
+          return accumulator
+        },
+        new Map<
+          number,
+          {
+            module: string
+            moduleId: number
+            assignments: { status: 'complete' | 'incomplete'; title: string }[]
+          }
+        >(),
+      )
       .values(),
   )
     .sort((left, right) => left.moduleId - right.moduleId)
