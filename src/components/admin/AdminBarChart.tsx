@@ -51,7 +51,7 @@ export default function AdminBarChart({
           <Tooltip
             contentStyle={TOOLTIP_STYLE}
             cursor={{ fill: 'rgba(255,255,255,0.04)' }}
-            formatter={(val: number) => [val, 'Count']}
+            formatter={(val) => [val ?? 0, 'Count']}
           />
           <Bar dataKey="value" radius={[0, 4, 4, 0]} maxBarSize={22}>
             {data.map((entry, index) => (
@@ -81,7 +81,7 @@ export default function AdminBarChart({
         <Tooltip
           contentStyle={TOOLTIP_STYLE}
           cursor={{ fill: 'rgba(255,255,255,0.04)' }}
-          formatter={(val: number) => [val, 'Count']}
+          formatter={(val) => [val ?? 0, 'Count']}
         />
         <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={48}>
           {data.map((entry, index) => (

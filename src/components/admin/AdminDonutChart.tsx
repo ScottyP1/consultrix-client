@@ -61,10 +61,10 @@ export default function AdminDonutChart({
         </Pie>
         <Tooltip
           contentStyle={TOOLTIP_STYLE}
-          formatter={(val: number, name: string) => [
-            `${val} (${total > 0 ? Math.round((val / total) * 100) : 0}%)`,
-            name,
-          ]}
+          formatter={(val, name) => {
+            const n = Number(val ?? 0)
+            return [`${n} (${total > 0 ? Math.round((n / total) * 100) : 0}%)`, name]
+          }}
         />
         <Legend
           iconType="circle"
