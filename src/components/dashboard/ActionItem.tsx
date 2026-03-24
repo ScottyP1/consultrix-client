@@ -37,13 +37,19 @@ const ActionItem = ({
         </div>
       </div>
 
-      <Link
-        to="/student/assignment/$assignmentId"
-        params={{ assignmentId: String(assignmentId) }}
-        className="shrink-0 rounded-lg bg-white/8 px-3 py-1.5 text-sm text-white/70 transition-colors hover:bg-white/15 hover:text-white"
-      >
-        {btnLabel}
-      </Link>
+      {assignmentId != null ? (
+        <Link
+          to="/student/assignment/$assignmentId"
+          params={{ assignmentId: String(assignmentId) }}
+          className="shrink-0 rounded-lg bg-white/8 px-3 py-1.5 text-sm text-white/70 transition-colors hover:bg-white/15 hover:text-white"
+        >
+          {btnLabel}
+        </Link>
+      ) : (
+        <button className="shrink-0 rounded-lg bg-white/8 px-3 py-1.5 text-sm text-white/70 transition-colors hover:bg-white/15 hover:text-white">
+          {btnLabel}
+        </button>
+      )}
     </ItemContainer>
   )
 }

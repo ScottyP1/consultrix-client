@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { LuFlag, LuCheckCircle, LuAlertTriangle } from 'react-icons/lu'
+import { LuFlag, LuCircleCheck, LuTriangleAlert } from 'react-icons/lu'
 
 import GlassContainer from '#/components/liquidGlass/GlassContainer'
 import SectionFrame from '#/components/dashboard/SectionFrame'
@@ -64,7 +64,7 @@ export default function FlagSection({
                     disabled={isResolving}
                     className="flex items-center gap-1 rounded-lg bg-emerald-500/15 px-2.5 py-1 text-xs text-emerald-300 transition-colors hover:bg-emerald-500/25 disabled:opacity-50"
                   >
-                    <LuCheckCircle size={12} />
+                    <LuCircleCheck size={12} />
                     Resolve
                   </button>
                 )}
@@ -101,7 +101,9 @@ export default function FlagSection({
             <div className="flex flex-wrap items-center gap-3">
               <select
                 value={priority}
-                onChange={(e) => setPriority(e.target.value as 'LOW' | 'MEDIUM' | 'HIGH')}
+                onChange={(e) =>
+                  setPriority(e.target.value as 'LOW' | 'MEDIUM' | 'HIGH')
+                }
                 className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:outline-none"
               >
                 <option value="LOW">Low</option>
@@ -128,7 +130,7 @@ export default function FlagSection({
             </div>
             {createError && (
               <p className="flex items-center gap-1.5 text-xs text-red-400">
-                <LuAlertTriangle size={12} />
+                <LuTriangleAlert size={12} />
                 {createError.message}
               </p>
             )}
