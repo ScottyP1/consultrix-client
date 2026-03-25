@@ -5,6 +5,8 @@ const AttendanceToolbar = ({
   cohortOptions,
   selectedCohortId,
   onCohortChange,
+  selectedDate,
+  onDateChange,
   statusFilter,
   onStatusChange,
   searchQuery,
@@ -13,6 +15,8 @@ const AttendanceToolbar = ({
   cohortOptions: { id: string; name: string; term: string }[]
   selectedCohortId: string
   onCohortChange: (value: string) => void
+  selectedDate: string
+  onDateChange: (value: string) => void
   statusFilter: 'all' | AttendanceStatus
   onStatusChange: (value: 'all' | AttendanceStatus) => void
   searchQuery: string
@@ -20,7 +24,7 @@ const AttendanceToolbar = ({
 }) => {
   return (
     <GlassContainer className="p-5">
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-4">
         <label className="space-y-2">
           <span className="text-[11px] uppercase tracking-[0.24em] text-white/45">
             Cohort
@@ -36,6 +40,18 @@ const AttendanceToolbar = ({
               </option>
             ))}
           </select>
+        </label>
+
+        <label className="space-y-2">
+          <span className="text-[11px] uppercase tracking-[0.24em] text-white/45">
+            Session Date
+          </span>
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={(event) => onDateChange(event.target.value)}
+            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none scheme-dark"
+          />
         </label>
 
         <label className="space-y-2">

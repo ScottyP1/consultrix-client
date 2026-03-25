@@ -45,23 +45,36 @@ function RouteComponent() {
     )
   }
 
-  const items: StudentAssignmentItem[] = useMemo(
-    () =>
-      (assignmentsQuery.data ?? [])
-        .map((assignment) => ({
-          assignmentId: assignment.assignmentId,
-          title: assignment.title,
-          subtitle: assignment.description || assignment.moduleTitle,
-          dueDate: formatAssignmentDueDate(
-            assignment.dueDate,
-            assignment.dueTime,
-          ),
-          status: getAssignmentStatus(assignment.courseworkStatus),
-        }))
-        .filter((assignment) =>
-          matchesFilter(assignment.status, selectedFilter),
-        ),
-    [assignmentsQuery.data, selectedFilter],
+  const grouped = useMemo(() => {
+    const allItems = (assignmentsQuery.data ?? [])
+      .map((assignment) => ({
+        assignmentId: assignment.assignmentId,
+        moduleTitle: assignment.moduleTitle || 'General',
+        title: assignment.title,
+        subtitle: assignment.description || assignment.moduleTitle,
+        dueDate: formatAssignmentDueDate(assignment.dueDate, assignment.dueTime),
+        status: getAssignmentStatus(assignment.courseworkStatus),
+      }))
+      .filter((item) => matchesFilter(item.status, selectedFilter))
+
+    const map = new Map<string, StudentAssignmentItem[]>()
+    for (const item of allItems) {
+      const key = item.moduleTitle
+      if (!map.has(key)) map.set(key, [])
+      map.get(key)!.push({
+        assignmentId: item.assignmentId,
+        title: item.title,
+        subtitle: item.subtitle,
+        dueDate: item.dueDate,
+        status: item.status,
+      })
+    }
+    return map
+  }, [assignmentsQuery.data, selectedFilter])
+
+  const totalVisible = Array.from(grouped.values()).reduce(
+    (sum, items) => sum + items.length,
+    0,
   )
 
   return (
@@ -76,30 +89,30 @@ function RouteComponent() {
         selectedFilter={selectedFilter}
         onFilterChange={setSelectedFilter}
       />
-      {items.length > 0 ? (
-        <AssignmentsList items={items} />
-      ) : (
+      {totalVisible === 0 ? (
         <p className="text-sm text-white/45">
           No assignments match the selected filter.
         </p>
+      ) : (
+        <div className="flex flex-col gap-8">
+          {Array.from(grouped.entries()).map(([moduleTitle, items]) => (
+            <div key={moduleTitle} className="flex flex-col gap-3">
+              <h3 className="text-xs font-semibold uppercase tracking-[0.22em] text-white/40">
+                {moduleTitle}
+              </h3>
+              <AssignmentsList items={items} />
+            </div>
+          ))}
+        </div>
       )}
     </div>
   )
 }
 
 function getAssignmentStatus(status: string): StudentAssignmentItem['status'] {
-  if (status === 'GRADED') {
-    return 'graded'
-  }
-
-  if (status === 'SUBMITTED') {
-    return 'submitted'
-  }
-
-  if (status === 'LATE') {
-    return 'late'
-  }
-
+  if (status === 'GRADED') return 'graded'
+  if (status === 'SUBMITTED') return 'submitted'
+  if (status === 'LATE') return 'late'
   return 'pending'
 }
 
@@ -107,9 +120,6 @@ function matchesFilter(
   status: StudentAssignmentItem['status'],
   selectedFilter: string,
 ) {
-  if (selectedFilter === 'All') {
-    return true
-  }
-
+  if (selectedFilter === 'All') return true
   return status === selectedFilter.toLowerCase()
 }

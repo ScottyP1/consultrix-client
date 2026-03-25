@@ -41,9 +41,9 @@ function ActiveLink({
     <Link
       to={item.href}
       onClick={onClick}
-      className={`${className} ${isActive ? 'bg-white/12 text-white' : ''}`}
+      className={`${className} ${isActive ? 'bg-sky-500/15 text-sky-200' : ''}`}
       activeProps={{
-        className: 'bg-white/12 text-white',
+        className: 'bg-sky-500/15 text-sky-200',
       }}
     >
       <Icon className={iconClassName} strokeWidth={1.8} />
@@ -230,8 +230,7 @@ const SideBar = ({
   const { logout, role } = useAuth()
   const { data } = useMe(Boolean(role))
 
-  const resolvedName =
-    [data?.firstName, data?.lastName].filter(Boolean).join(' ').trim() || name
+  const resolvedName = data?.firstName?.trim() || name
   const resolvedRoleLabel = role ? formatStatusLabel(role.replace(/^ROLE_/, '')) : roleLabel
   const resolvedAvatarLabel =
     data?.firstName?.trim()?.charAt(0).toUpperCase() || avatarLabel

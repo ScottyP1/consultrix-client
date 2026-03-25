@@ -329,6 +329,49 @@ export function getAttendance() {
   return request<AttendanceProfileResponseDto>('/attendance/me')
 }
 
+export function getMyAttendanceRecords() {
+  return request<AttendanceResponseDto[]>('/attendance/me/records')
+}
+
+// ── Planned Student Events ─────────────────────────────────────────────────────
+
+export interface PlannedStudentEventDto {
+  id: number
+  studentUserId: number
+  studentFirstName: string
+  studentLastName: string
+  eventDate: string
+  /** LATE | REMOTE | OFF */
+  eventType: 'LATE' | 'REMOTE' | 'OFF'
+  note: string | null
+  createdAt: string
+}
+
+export interface PlannedStudentEventRequestDto {
+  eventDate: string
+  eventType: 'LATE' | 'REMOTE' | 'OFF'
+  note?: string
+}
+
+export function getMyPlannedEvents() {
+  return request<PlannedStudentEventDto[]>('/planned-events/me')
+}
+
+export function upsertPlannedEvent(payload: PlannedStudentEventRequestDto) {
+  return request<PlannedStudentEventDto>('/planned-events', {
+    method: 'POST',
+    data: payload,
+  })
+}
+
+export function deletePlannedEvent(eventId: number) {
+  return request<void>(`/planned-events/${eventId}`, { method: 'DELETE' })
+}
+
+export function getPlannedEventsForDate(date: string) {
+  return request<PlannedStudentEventDto[]>(`/planned-events/date/${date}`)
+}
+
 export function getAssignments() {
   return request<AssignmentResponseDto[]>('/assignments/me')
 }
