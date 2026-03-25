@@ -91,11 +91,11 @@ function RouteComponent() {
           />
           <SkillCard
             skills={[
-              profile?.role ?? 'Student',
               `Cohort ${profile?.cohortId ?? '--'}`,
               'Assignments',
               'Grades',
               'Attendance',
+              'Messages',
             ]}
           />
         </div>

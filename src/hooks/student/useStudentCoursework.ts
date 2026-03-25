@@ -13,7 +13,10 @@ export function useStudentCoursework() {
 
   const submitMutation = useMutation({
     mutationFn: (payload: SubmissionRequestDto) => createSubmission(payload),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['student', 'coursework'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['student', 'coursework'] })
+      qc.invalidateQueries({ queryKey: ['student', 'assignments'] })
+    },
   })
 
   return { courseworkQuery, submitMutation }

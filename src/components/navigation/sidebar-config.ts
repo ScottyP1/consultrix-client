@@ -12,6 +12,7 @@ import {
   UserRoundCheck,
   SquareCheck,
   Users,
+  CalendarCheck,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -26,6 +27,7 @@ export const studentNavLinks: SideBarLink[] = [
   { title: 'Syllabus', icon: BookOpen, href: '/student/syllabus' },
   { title: 'Grades', icon: GraduationCap, href: '/student/grades' },
   { title: 'Assignments', icon: FileText, href: '/student/assignments' },
+  { title: 'Attendance', icon: CalendarCheck, href: '/student/attendance' },
   { title: 'Calendar', icon: CalendarDays, href: '/student/calendar' },
   { title: 'Messages', icon: MessageSquareText, href: '/student/messages' },
   { title: 'Profile', icon: UserCircle2, href: '/student/profile' },

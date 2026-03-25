@@ -36,13 +36,13 @@ export function useInstructorGradebook() {
 
   const createGradeMutation = useMutation({
     mutationFn: (payload: GradeRequestDto) => createGrade(payload),
-    onSuccess: invalidateGrades,
+    onSettled: invalidateGrades,
   })
 
   const updateGradeMutation = useMutation({
     mutationFn: ({ gradeId, payload }: { gradeId: number; payload: GradeRequestDto }) =>
       updateGrade(gradeId, payload),
-    onSuccess: invalidateGrades,
+    onSettled: invalidateGrades,
   })
 
   return {

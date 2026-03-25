@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { createFileRoute } from '@tanstack/react-router'
+import { useQuery } from '@tanstack/react-query'
 import { useInstructorAttendanceMutations } from '#/hooks/instructor/useInstructorAttendanceMutations'
 import { LuSave } from 'react-icons/lu'
+import { getPlannedEventsForDate } from '#/api/consultrix'
 
 import PageHeader from '#/components/PageHeader'
 import AttendanceDetailPanel from '#/components/attendance/AttendanceDetailPanel'
@@ -40,6 +42,9 @@ function RouteComponent() {
   )
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCohortId, setSelectedCohortId] = useState('')
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().slice(0, 10),
+  )
   const [selectedSessionId, setSelectedSessionId] = useState('')
   const [selectedCell, setSelectedCell] = useState<{
     studentId: string
@@ -52,6 +57,12 @@ function RouteComponent() {
   const [saveSessionError, setSaveSessionError] = useState<string | null>(null)
 
   const { createAttendanceMutation, updateAttendanceMutation } = useInstructorAttendanceMutations()
+
+  const plannedEventsQuery = useQuery({
+    queryKey: ['planned-events', selectedDate],
+    queryFn: () => getPlannedEventsForDate(selectedDate),
+    staleTime: 1000 * 60 * 2,
+  })
 
   async function handleSubmitSession() {
     if (!selectedSession || !selectedCohort) return
@@ -105,31 +116,26 @@ function RouteComponent() {
           name: getStudentName(student),
           email: student.email,
         }))
-      const sessionDates = Array.from(
+      const existingDates = Array.from(
         new Set(
           attendance
             .filter((record) => record.cohort.id === cohort.id)
             .map((record) => record.attendanceDate),
         ),
       )
-        .sort((left, right) => new Date(left).getTime() - new Date(right).getTime())
 
-      const sessions =
-        sessionDates.length > 0
-          ? sessionDates.map((date) => ({
-              id: date,
-              label: formatDate(date),
-              date: formatDate(date),
-              topic: cohort.name,
-            }))
-          : [
-              {
-                id: new Date().toISOString().slice(0, 10),
-                label: 'Today',
-                date: formatDate(new Date().toISOString()),
-                topic: cohort.name,
-              },
-            ]
+      // Always include today so the instructor can take attendance on any date
+      const today = new Date().toISOString().slice(0, 10)
+      const allDates = Array.from(new Set([...existingDates, today])).sort(
+        (left, right) => new Date(left).getTime() - new Date(right).getTime(),
+      )
+
+      const sessions = allDates.map((date) => ({
+        id: date,
+        label: date === today ? `Today (${formatDate(date)})` : formatDate(date),
+        date: formatDate(date),
+        topic: cohort.name,
+      }))
 
       const records = attendance
         .filter((record) => record.cohort.id === cohort.id)
@@ -166,17 +172,10 @@ function RouteComponent() {
   const selectedCohort =
     cohorts.find((cohort) => cohort.id === selectedCohortId) ?? cohorts[0]
 
+  // Keep the session in sync with the selected date
   useEffect(() => {
-    if (!selectedCohort) {
-      return
-    }
-
-    setSelectedSessionId((current) =>
-      selectedCohort.sessions.some((session) => session.id === current)
-        ? current
-        : (selectedCohort.sessions.at(-1)?.id ?? selectedCohort.sessions[0]?.id ?? ''),
-    )
-  }, [selectedCohort])
+    setSelectedSessionId(selectedDate)
+  }, [selectedDate])
 
   if (isLoading) {
     return (
@@ -311,6 +310,11 @@ function RouteComponent() {
           setSelectedCohortId(value)
           setSelectedCell(null)
         }}
+        selectedDate={selectedDate}
+        onDateChange={(value) => {
+          setSelectedDate(value)
+          setSelectedCell(null)
+        }}
         statusFilter={statusFilter}
         onStatusChange={setStatusFilter}
         searchQuery={searchQuery}
@@ -352,6 +356,7 @@ function RouteComponent() {
               students={filteredStudents}
               session={selectedSession}
               records={selectedSessionRecords}
+              plannedEvents={plannedEventsQuery.data ?? []}
               selectedStudentId={selectedCell?.studentId}
               onSelectStudent={(studentId) =>
                 setSelectedCell({ studentId, sessionId: selectedSession.id })

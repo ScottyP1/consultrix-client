@@ -14,6 +14,7 @@ const DashboardActionList = ({
       {items.map((item, index) => (
         <ActionItem
           key={`${item.title}-${index}`}
+          to={item.to}
           assignmentId={item.assignmentId}
           icon={item.icon}
           iconAccent={item.iconAccent}

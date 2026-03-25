@@ -5,6 +5,7 @@ import type {
   AttendanceStatus,
   AttendanceStudent,
 } from '#/data/attendance/types'
+import type { PlannedStudentEventDto } from '#/api/consultrix'
 
 const rosterStatusStyles: Record<AttendanceStatus, string> = {
   present: 'border-emerald-400/20 bg-emerald-500/14 text-emerald-200',
@@ -20,10 +21,17 @@ const attendanceOptions: AttendanceStatus[] = [
   'excused',
 ]
 
+const PLANNED_BADGE: Record<string, { label: string; className: string }> = {
+  LATE:   { label: 'Planned: Late',   className: 'bg-amber-500/15 text-amber-300' },
+  REMOTE: { label: 'Planned: Remote', className: 'bg-sky-500/15 text-sky-300' },
+  OFF:    { label: 'Planned: Off',    className: 'bg-rose-500/15 text-rose-300' },
+}
+
 const AttendanceRoster = ({
   students,
   session,
   records,
+  plannedEvents = [],
   selectedStudentId,
   onSelectStudent,
   onStatusChange,
@@ -31,12 +39,16 @@ const AttendanceRoster = ({
   students: AttendanceStudent[]
   session: AttendanceSession
   records: AttendanceRecord[]
+  plannedEvents?: PlannedStudentEventDto[]
   selectedStudentId?: string
   onSelectStudent: (studentId: string) => void
   onStatusChange: (studentId: string, status: AttendanceStatus) => void
 }) => {
   const recordLookup = new Map(
     records.map((record) => [record.studentId, record]),
+  )
+  const plannedLookup = new Map(
+    plannedEvents.map((e) => [e.studentUserId, e]),
   )
 
   return (
@@ -49,12 +61,15 @@ const AttendanceRoster = ({
             status: 'absent' as const,
             note: '',
           }
+        const planned = plannedLookup.get(Number(student.id))
+        const badge = planned ? PLANNED_BADGE[planned.eventType] : null
 
         return (
           <div
             key={student.id}
             className={cn(
-              'grid gap-4 rounded-2xl border border-white/8 bg-white/4 px-4 py-4 lg:grid-cols-[minmax(0,1fr)_auto]',
+              'grid gap-4 rounded-2xl border bg-white/4 px-4 py-4 lg:grid-cols-[minmax(0,1fr)_auto]',
+              badge ? 'border-amber-400/25' : 'border-white/8',
               selectedStudentId === student.id && 'ring-2 ring-sky-400/50',
             )}
           >
@@ -63,9 +78,17 @@ const AttendanceRoster = ({
               onClick={() => onSelectStudent(student.id)}
               className="min-w-0 text-left"
             >
-              <p className="truncate text-sm font-medium text-white">
-                {student.name}
-              </p>
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className="truncate text-sm font-medium text-white">
+                  {student.name}
+                </p>
+                {badge && (
+                  <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${badge.className}`}>
+                    {badge.label}
+                    {planned?.note ? ` — ${planned.note}` : ''}
+                  </span>
+                )}
+              </div>
               <p className="truncate text-xs text-white/40">{student.email}</p>
             </button>
 

@@ -142,7 +142,7 @@ function RouteComponent() {
       )}
 
       <div className="grid gap-4 xl:grid-cols-[17rem_minmax(0,1fr)]">
-        <GlassContainer className="min-h-[31rem] rounded-[18px] overflow-hidden p-0">
+        <GlassContainer className="h-124 rounded-[18px] overflow-hidden p-0">
           <div className="border-b border-white/8 p-4">
             <label className="flex items-center gap-3 rounded-xl border border-white/8 bg-white/6 px-3 py-2.5">
               <LuSearch className="text-white/35" size={16} />
@@ -203,7 +203,7 @@ function RouteComponent() {
           </div>
         </GlassContainer>
 
-        <GlassContainer className="min-h-[31rem] rounded-[18px] overflow-hidden p-0 flex flex-col">
+        <GlassContainer className="h-124 rounded-[18px] overflow-hidden p-0 flex flex-col">
           {selectedConversation ? (
             <>
               <div className="border-b border-white/8 px-4 py-4">
@@ -233,7 +233,7 @@ function RouteComponent() {
                 </div>
               </div>
 
-              <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-5 min-h-[20rem]">
+              <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-5">
                 {messages.length === 0 ? (
                   <p className="text-center text-sm text-white/30">No messages yet.</p>
                 ) : (
@@ -305,7 +305,7 @@ function RouteComponent() {
               </div>
             </>
           ) : (
-            <div className="flex h-full min-h-[31rem] items-center justify-center text-sm text-white/45">
+            <div className="flex h-full items-center justify-center text-sm text-white/45">
               Select a conversation to start messaging.
             </div>
           )}
